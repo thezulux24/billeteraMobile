@@ -46,6 +46,10 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - `POST /api/v1/cash-wallets`
 - `PATCH /api/v1/cash-wallets/{wallet_id}`
 - `DELETE /api/v1/cash-wallets/{wallet_id}`
+- `GET /api/v1/bank-accounts`
+- `POST /api/v1/bank-accounts`
+- `PATCH /api/v1/bank-accounts/{account_id}`
+- `DELETE /api/v1/bank-accounts/{account_id}`
 
 ## Tests
 ```powershell

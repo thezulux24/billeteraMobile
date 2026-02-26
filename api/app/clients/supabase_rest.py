@@ -121,6 +121,69 @@ class SupabaseRestClient:
             )
         return data[0]
 
+    async def list_bank_accounts(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+    ) -> list[dict[str, Any]]:
+        url = (
+            f"{self._base_url}/rest/v1/bank_accounts"
+            f"?select=id,name,bank_name,balance,currency,created_at,updated_at"
+            f"&user_id=eq.{user_id}&deleted_at=is.null"
+            "&order=created_at.desc"
+        )
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.get(url, headers=self._headers(access_token=access_token))
+        return self._unwrap_response(response)
+
+    async def create_bank_account(
+        self,
+        *,
+        access_token: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = f"{self._base_url}/rest/v1/bank_accounts"
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.post(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=500,
+                code="BANK_ACCOUNT_CREATE_FAILED",
+                message="Bank account could not be created.",
+            )
+        return data[0]
+
+    async def update_bank_account(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+        account_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = (
+            f"{self._base_url}/rest/v1/bank_accounts"
+            f"?id=eq.{account_id}&user_id=eq.{user_id}&deleted_at=is.null"
+        )
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.patch(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=404,
+                code="BANK_ACCOUNT_NOT_FOUND",
+                message="Bank account not found.",
+            )
+        return data[0]
+
     @staticmethod
     def _unwrap_response(response: httpx.Response) -> list[dict[str, Any]]:
         try:

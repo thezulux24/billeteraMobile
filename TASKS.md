@@ -51,6 +51,18 @@
 | M-015 | Forzar navegacion post login/registro en UI | DONE | `context.go('/profile')` tras auth exitosa en login/register | 2026-02-26 |
 | M-016 | Asegurar HTTP local en Android debug | DONE | `android:usesCleartextTraffic=\"true\"` en manifest principal | 2026-02-26 |
 | M-017 | Implementar modulo API `cash_wallets` (CRUD + soft delete) | DONE | Nuevo endpoint/service/schema/tests para `/api/v1/cash-wallets` | 2026-02-26 |
+| M-018 | Corregir UX de `Guardar cambios` en perfil | DONE | Popup de exito/error + deteccion de “sin cambios” + validacion visible | 2026-02-26 |
+| M-019 | Validaciones front robustas en login y registro | DONE | Regex email + password fuerte + popup al validar y al error backend | 2026-02-26 |
+| M-020 | Animaciones pro en auth screens | DONE | Entrada con `AnimatedOpacity` + `AnimatedSlide`, errores con `AnimatedSwitcher` | 2026-02-26 |
+| M-021 | Cambiar flujo post-auth para entrar a `Inicio` en vez de `Perfil` | DONE | Router y auth screens redirigen a `/home` | 2026-02-26 |
+| M-022 | Enviar al usuario a `Inicio` tras guardar perfil | DONE | `ProfileScreen` guarda y navega a `/home` | 2026-02-26 |
+| M-023 | Implementar `Home` funcional conectada al backend (`cash-wallets`) | DONE | Listado, alta y eliminacion de billeteras con provider + popups | 2026-02-26 |
+| M-024 | Redisenar barra superior y accion `Salir` en Home/Profile | DONE | Nueva `AppTopBar` glass con acciones premium y logout destacado | 2026-02-26 |
+| M-025 | Implementar modulo `bank_accounts` en backend (CRUD + soft delete) | DONE | Endpoints `/api/v1/bank-accounts` + servicio + tests unitarios | 2026-02-26 |
+| M-026 | Integrar `bank_accounts` en frontend Inicio | DONE | Provider/API/model + alta/listado/eliminacion desde Home | 2026-02-26 |
+| M-027 | Corregir crash al guardar billetera/cuenta en Home | DONE | Refactor de bottom sheet: sin `Navigator.of(sheetContext)` tras `await` y controladores locales con `dispose` seguro | 2026-02-26 |
+| M-028 | Corregir overflow y doble submit en modal de creacion | DONE | Sheet con `SingleChildScrollView`, altura acotada y boton guardar con estado `loading` | 2026-02-26 |
+| M-029 | Revalidar calidad Flutter tras fix de Home | DONE | `flutter analyze` sin issues + `flutter test` OK | 2026-02-26 |
 
 ## Historial de ejecuciones
 
@@ -73,3 +85,15 @@
 | M-015 | DONE | Navegacion de auth ya no depende solo del guard global; login/register redirigen directamente al perfil. | 2026-02-26 |
 | M-016 | DONE | Configurado cleartext traffic para desarrollo Android con API HTTP local. | 2026-02-26 |
 | M-017 | DONE | Primera pieza de Fase 2 lista en backend: cash wallets con RLS via token, CRUD y eliminacion logica. | 2026-02-26 |
+| M-018 | DONE | `ProfileScreen` ahora siempre responde al guardar con popup y evita submits vacios. | 2026-02-26 |
+| M-019 | DONE | Login/registro bloquean datos invalidos con mensajes popup claros para el usuario. | 2026-02-26 |
+| M-020 | DONE | Pantallas auth con transiciones de entrada y animacion de bloque de error. | 2026-02-26 |
+| M-021 | DONE | La sesion ya no abre en perfil por defecto; el punto de entrada autenticado ahora es Inicio. | 2026-02-26 |
+| M-022 | DONE | Guardar perfil finaliza flujo llevando al usuario directamente al inicio. | 2026-02-26 |
+| M-023 | DONE | Primera funcionalidad completa front+back en inicio: cash wallets (GET/POST/DELETE) usando API propia. | 2026-02-26 |
+| M-024 | DONE | Top area profesional unificada: barra superior glass con acciones consistentes y mejor estilo para `Salir`. | 2026-02-26 |
+| M-025 | DONE | Backend ampliado con bank accounts: contrato API, wiring en router/dependencies y cobertura de pruebas. | 2026-02-26 |
+| M-026 | DONE | Inicio ahora consolida dos fuentes de activos (efectivo + bancos) con UX de creacion y borrado. | 2026-02-26 |
+| M-027 | DONE | Crash al guardar activo corregido: contexto de cierre del modal estable y ciclo de vida de `TextEditingController` movido al propio sheet. | 2026-02-26 |
+| M-028 | DONE | Se elimino overflow del modal con layout scrollable y submit protegido contra taps repetidos. | 2026-02-26 |
+| M-029 | DONE | Verificacion de calidad post-fix ejecutada (`flutter analyze`, `flutter test`). | 2026-02-26 |

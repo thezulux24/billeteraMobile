@@ -9,6 +9,7 @@ from app.core.config import Settings, get_settings
 from app.core.exceptions import AppException
 from app.core.security import SupabaseJwtVerifier
 from app.services.auth_service import AuthService
+from app.services.bank_account_service import BankAccountService
 from app.services.cash_wallet_service import CashWalletService
 from app.services.profile_service import ProfileService
 
@@ -41,6 +42,12 @@ def get_cash_wallet_service(
     rest_client: SupabaseRestClient = Depends(get_rest_client),
 ) -> CashWalletService:
     return CashWalletService(rest_client)
+
+
+def get_bank_account_service(
+    rest_client: SupabaseRestClient = Depends(get_rest_client),
+) -> BankAccountService:
+    return BankAccountService(rest_client)
 
 
 def get_jwt_verifier(

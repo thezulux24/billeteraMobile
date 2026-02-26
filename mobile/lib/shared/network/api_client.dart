@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/config/app_config.dart';
+import '../../features/bank_accounts/data/bank_account_api.dart';
 import '../../features/auth/data/auth_api.dart';
+import '../../features/cash_wallets/data/cash_wallet_api.dart';
 import '../../features/profile/data/profile_api.dart';
 import '../services/secure_storage_service.dart';
 import '../services/session_store.dart';
@@ -62,4 +64,12 @@ final privateDioProvider = Provider<Dio>((ref) {
 
 final profileApiProvider = Provider<ProfileApi>((ref) {
   return ProfileApi(ref.watch(privateDioProvider));
+});
+
+final cashWalletApiProvider = Provider<CashWalletApi>((ref) {
+  return CashWalletApi(ref.watch(privateDioProvider));
+});
+
+final bankAccountApiProvider = Provider<BankAccountApi>((ref) {
+  return BankAccountApi(ref.watch(privateDioProvider));
 });

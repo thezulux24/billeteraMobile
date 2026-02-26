@@ -73,6 +73,10 @@ class ProfileNotifier extends ChangeNotifier {
         return message;
       }
     }
+    if (error.response == null) {
+      final uri = error.requestOptions.uri;
+      return 'No se pudo conectar al backend (${uri.scheme}://${uri.host}:${uri.port}).';
+    }
     return 'No se pudo cargar el perfil.';
   }
 }
