@@ -1,16 +1,28 @@
-# mobile
+﻿# mobile
 
-A new Flutter project.
+Flutter app para billeteraMobile.
 
-## Getting Started
+## Stack
+- Flutter 3.38+
+- Riverpod 2
+- GoRouter
+- Dio
+- flutter_secure_storage
 
-This project is a starting point for a Flutter application.
+## Configuracion
+La app no usa claves Supabase directas en esta fase.
 
-A few resources to get you started if this is your first Flutter project:
+Define la URL del backend con `--dart-define`:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```powershell
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Flujo implementado
+- Splash
+- Login
+- Registro
+- Recuperar contrasena
+- Sesion persistida (secure storage)
+- Refresh token por interceptor HTTP
+- Perfil basico (moneda base + toggle IA)
