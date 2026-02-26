@@ -1,0 +1,4 @@
+interface:
+  display_name: "Billetera Mobile Dev"
+  short_description: "Guia para desarrollar Billetera en iOS y Android"
+  default_prompt: "Trabaja en Billetera Mobile siguiendo el SRS y el backlog, con paridad iOS y Android."
