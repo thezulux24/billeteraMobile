@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/glass_donut_chart.dart';
 import '../../../../shared/widgets/category_list_item.dart';
 import '../../../../shared/widgets/premium_bottom_nav.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   const AnalyticsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return GlassScaffold(
       isPremium: true,
       child: Stack(
@@ -32,12 +38,12 @@ class AnalyticsScreen extends StatelessWidget {
                       icon: Icons.arrow_back_ios_new_rounded,
                       onPressed: () => context.go('/home'),
                     ),
-                    const Text(
+                    Text(
                       'Analytics',
-                      style: TextStyle(
+                      style: GoogleFonts.manrope(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: onSurface,
                       ),
                     ),
                     _IconBtn(
@@ -62,10 +68,10 @@ class AnalyticsScreen extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: AppColors.glassBackground(context),
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: AppColors.glassBorder(context),
                           ),
                         ),
                         child: Row(
@@ -76,14 +82,16 @@ class AnalyticsScreen extends StatelessWidget {
                               color: Color(0xff94a3b8),
                               size: 18,
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
                               child: Text(
                                 'October 2023',
-                                style: TextStyle(
+                                style: GoogleFonts.manrope(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: onSurface,
                                 ),
                               ),
                             ),
@@ -101,20 +109,20 @@ class AnalyticsScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: const Color(0xff141428).withValues(alpha: 0.6),
+                          color: AppColors.glassBackground(context),
                           borderRadius: BorderRadius.circular(32),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: AppColors.glassBorder(context),
                           ),
                         ),
                         child: Column(
                           children: [
-                            const Text(
+                            Text(
                               'Spending by Category',
-                              style: TextStyle(
+                              style: GoogleFonts.manrope(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xffe2e8f0),
+                                color: onSurface,
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -158,14 +166,14 @@ class AnalyticsScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 24),
                             // View Full Report
-                            const Divider(color: Colors.white10),
+                            Divider(color: onSurface.withValues(alpha: 0.1)),
                             TextButton.icon(
                               onPressed: () {},
-                              icon: const Text(
+                              icon: Text(
                                 'View Full Report',
-                                style: TextStyle(
+                                style: GoogleFonts.manrope(
                                   fontSize: 12,
-                                  color: Color(0xff94a3b8),
+                                  color: const Color(0xff94a3b8),
                                 ),
                               ),
                               label: const Icon(
@@ -185,7 +193,9 @@ class AnalyticsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              const Color(0xffeab308).withValues(alpha: 0.05),
+                              const Color(
+                                0xffeab308,
+                              ).withValues(alpha: isDark ? 0.05 : 0.1),
                               Colors.transparent,
                             ],
                           ),
@@ -214,24 +224,28 @@ class AnalyticsScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Expanded(
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Spending Insight',
-                                    style: TextStyle(
+                                    style: GoogleFonts.manrope(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xfffef9c3),
+                                      color: isDark
+                                          ? const Color(0xfffef9c3)
+                                          : const Color(0xffa16207),
                                     ),
                                   ),
-                                  SizedBox(height: 4),
+                                  const SizedBox(height: 4),
                                   Text(
                                     'Your spending in Shopping is 15% higher than last month. Consider setting a limit for next month.',
-                                    style: TextStyle(
+                                    style: GoogleFonts.manrope(
                                       fontSize: 12,
-                                      color: Color(0xff94a3b8),
+                                      color: isDark
+                                          ? const Color(0xff94a3b8)
+                                          : const Color(0xff4b5563),
                                       height: 1.5,
                                     ),
                                   ),
@@ -277,17 +291,22 @@ class _IconBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
+          color: AppColors.glassBackground(context),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: AppColors.glassBorder(context)),
         ),
-        child: Icon(icon, color: const Color(0xffcbd5e1), size: 20),
+        child: Icon(
+          icon,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          size: 20,
+        ),
       ),
     );
   }

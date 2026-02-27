@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme/app_colors.dart';
 
 class MetricCard extends StatelessWidget {
   const MetricCard({
@@ -17,18 +18,14 @@ class MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+
     return Container(
       decoration: BoxDecoration(
+        color: AppColors.glassBackground(context),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withValues(alpha: 0.1),
-            Colors.white.withValues(alpha: 0.02),
-          ],
-        ),
+        border: Border.all(color: AppColors.glassBorder(context)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -42,7 +39,7 @@ class MetricCard extends StatelessWidget {
               height: 140,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.05),
+                color: onSurface.withValues(alpha: 0.03),
               ),
             ),
           ),
@@ -63,7 +60,7 @@ class MetricCard extends StatelessWidget {
                           style: GoogleFonts.manrope(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xffa5b4fc),
+                            color: AppColors.glassLabel(context),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -75,7 +72,7 @@ class MetricCard extends StatelessWidget {
                                 style: GoogleFonts.manrope(
                                   fontSize: 44,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: onSurface,
                                   letterSpacing: -1,
                                 ),
                               ),
@@ -84,7 +81,7 @@ class MetricCard extends StatelessWidget {
                                 style: GoogleFonts.manrope(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.white.withValues(alpha: 0.6),
+                                  color: onSurface.withValues(alpha: 0.6),
                                 ),
                               ),
                             ],
@@ -133,7 +130,7 @@ class MetricCard extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        Colors.white.withValues(alpha: 0.15),
+                        onSurface.withValues(alpha: 0.15),
                         Colors.transparent,
                       ],
                     ),
@@ -159,7 +156,7 @@ class MetricCard extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.white.withValues(alpha: 0.1),
+                            onSurface.withValues(alpha: 0.1),
                             Colors.transparent,
                           ],
                         ),
@@ -202,6 +199,9 @@ class _MetricItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+
     return Column(
       crossAxisAlignment: textAlign == TextAlign.left
           ? CrossAxisAlignment.start
@@ -211,7 +211,7 @@ class _MetricItem extends StatelessWidget {
           label,
           style: GoogleFonts.manrope(
             fontSize: 12,
-            color: const Color(0xffa5b4fc),
+            color: AppColors.glassLabel(context),
           ),
         ),
         const SizedBox(height: 4),
@@ -226,7 +226,7 @@ class _MetricItem extends StatelessWidget {
               style: GoogleFonts.manrope(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: onSurface,
               ),
             ),
             const SizedBox(width: 8),

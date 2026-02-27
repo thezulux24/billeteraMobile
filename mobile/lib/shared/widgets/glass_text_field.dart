@@ -29,6 +29,10 @@ class GlassTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+    final isDark = theme.brightness == Brightness.dark;
+
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -36,31 +40,37 @@ class GlassTextField extends StatelessWidget {
       validator: validator,
       textInputAction: textInputAction,
       onFieldSubmitted: onFieldSubmitted,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: onSurface),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+        labelStyle: TextStyle(color: onSurface.withValues(alpha: 0.6)),
         prefixIcon: prefixIcon == null
             ? null
-            : Icon(prefixIcon, color: Colors.white.withValues(alpha: 0.6)),
+            : Icon(prefixIcon, color: onSurface.withValues(alpha: 0.6)),
         filled: true,
         fillColor: isPremium
-            ? Colors.white.withValues(alpha: 0.03) // Stitch glassy background
-            : AppColors.glassDark,
+            ? AppColors.glassBackground(context)
+            : (isDark
+                  ? AppColors.glassDark
+                  : Colors.black.withValues(alpha: 0.05)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppTokens.radiusMd),
           borderSide: BorderSide(
             color: isPremium
-                ? Colors.white.withValues(alpha: 0.1) // Stitch subtle border
-                : AppColors.glassBorderDark,
+                ? AppColors.glassBorder(context)
+                : (isDark
+                      ? AppColors.glassBorderDark
+                      : Colors.black.withValues(alpha: 0.1)),
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppTokens.radiusMd),
           borderSide: BorderSide(
             color: isPremium
-                ? Colors.white.withValues(alpha: 0.1)
-                : AppColors.glassBorderDark,
+                ? AppColors.glassBorder(context)
+                : (isDark
+                      ? AppColors.glassBorderDark
+                      : Colors.black.withValues(alpha: 0.1)),
           ),
         ),
         focusedBorder: OutlineInputBorder(

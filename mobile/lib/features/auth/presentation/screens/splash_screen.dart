@@ -31,8 +31,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final onSurface = theme.colorScheme.onSurface;
+
     return Scaffold(
-      backgroundColor: const Color(0xff0f0e17),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Background Orbs
@@ -46,8 +50,10 @@ class _SplashScreenState extends State<SplashScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xff9333ea).withValues(alpha: 0.3),
-                    const Color(0xff0f0e17).withValues(alpha: 0),
+                    const Color(
+                      0xff9333ea,
+                    ).withValues(alpha: isDark ? 0.3 : 0.15),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0),
                   ],
                 ),
               ),
@@ -63,8 +69,10 @@ class _SplashScreenState extends State<SplashScreen>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    const Color(0xff14b8a6).withValues(alpha: 0.25),
-                    const Color(0xff0f0e17).withValues(alpha: 0),
+                    const Color(
+                      0xff14b8a6,
+                    ).withValues(alpha: isDark ? 0.25 : 0.12),
+                    theme.scaffoldBackgroundColor.withValues(alpha: 0),
                   ],
                 ),
               ),
@@ -74,10 +82,11 @@ class _SplashScreenState extends State<SplashScreen>
           // Pattern Overlay
           Positioned.fill(
             child: Opacity(
-              opacity: 0.04,
+              opacity: isDark ? 0.04 : 0.02,
               child: Image.network(
                 'https://www.transparenttextures.com/patterns/stardust.png',
                 repeat: ImageRepeat.repeat,
+                color: isDark ? null : Colors.black,
               ),
             ),
           ),
@@ -103,7 +112,9 @@ class _SplashScreenState extends State<SplashScreen>
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.cyan.withValues(alpha: 0.1),
+                                  color: Colors.cyan.withValues(
+                                    alpha: isDark ? 0.1 : 0.05,
+                                  ),
                                   blurRadius: 80,
                                   spreadRadius: 10,
                                 ),
@@ -116,10 +127,10 @@ class _SplashScreenState extends State<SplashScreen>
                               width: 96,
                               height: 96,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.03),
+                                color: onSurface.withValues(alpha: 0.03),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.12),
+                                  color: onSurface.withValues(alpha: 0.12),
                                 ),
                               ),
                               child: ClipRRect(
@@ -130,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen>
                                     sigmaY: 10,
                                   ),
                                   child: Container(
-                                    color: Colors.white.withValues(alpha: 0.05),
+                                    color: onSurface.withValues(alpha: 0.05),
                                   ),
                                 ),
                               ),
@@ -139,9 +150,9 @@ class _SplashScreenState extends State<SplashScreen>
 
                           Transform.rotate(
                             angle: 0,
-                            child: const Icon(
+                            child: Icon(
                               Icons.diamond_outlined,
-                              color: Colors.white,
+                              color: onSurface,
                               size: 48,
                               weight: 100,
                             ),
@@ -159,10 +170,10 @@ class _SplashScreenState extends State<SplashScreen>
                   width: 240,
                   height: 2,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: onSurface.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: onSurface.withValues(alpha: 0.08),
                     ),
                   ),
                   child: AnimatedBuilder(
@@ -223,7 +234,7 @@ class _SplashScreenState extends State<SplashScreen>
                 width: 128,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),

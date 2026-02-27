@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class MonthlyOverviewChart extends StatelessWidget {
   const MonthlyOverviewChart({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+
     return Container(
-      height: 250,
+      height: 350,
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: AppColors.glassBackground(context),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: AppColors.glassBorder(context)),
       ),
       child: Column(
         children: [
@@ -28,7 +32,7 @@ class MonthlyOverviewChart extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   _LegendItem(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: onSurface.withValues(alpha: 0.3),
                     label: 'Expense',
                   ),
                 ],
@@ -39,30 +43,28 @@ class MonthlyOverviewChart extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.1),
-                  ),
+                  border: Border.all(color: onSurface.withValues(alpha: 0.1)),
                 ),
-                child: const Text(
+                child: Text(
                   'FEB 2024',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xffa5b4fc),
+                    color: AppColors.glassLabel(context),
                   ),
                 ),
               ),
             ],
           ),
-          const Expanded(
+          Expanded(
             child: Padding(
-              padding: EdgeInsets.only(top: 24),
+              padding: const EdgeInsets.only(top: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
+                children: const [
                   _BarGroup(label: 'W1', incomeHeight: 0.6, expenseHeight: 0.3),
                   _BarGroup(
                     label: 'W2',
@@ -124,7 +126,7 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: Color(0x99a5b4fc)),
+          style: TextStyle(fontSize: 12, color: AppColors.glassLabel(context)),
         ),
       ],
     );
@@ -144,6 +146,9 @@ class _BarGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -152,7 +157,7 @@ class _BarGroup extends StatelessWidget {
           children: [
             Container(
               width: 12,
-              height: 120,
+              height: 100,
               decoration: BoxDecoration(
                 color: const Color(0x334f46e5),
                 borderRadius: BorderRadius.circular(100),
@@ -160,7 +165,7 @@ class _BarGroup extends StatelessWidget {
             ),
             Container(
               width: 12,
-              height: 120 * incomeHeight,
+              height: 100 * incomeHeight,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.bottomCenter,
@@ -181,17 +186,17 @@ class _BarGroup extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           width: 12,
-          height: 120 * expenseHeight,
+          height: 100 * expenseHeight,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: onSurface.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(color: onSurface.withValues(alpha: 0.05)),
           ),
         ),
         const SizedBox(height: 12),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Color(0x80a5b4fc)),
+          style: TextStyle(fontSize: 10, color: AppColors.glassLabel(context)),
         ),
       ],
     );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../features/credit_cards/models/credit_card.dart';
 
-enum WalletCardType { visa, amex, savings }
+enum WalletCardType { visa, amex, savings, credit }
 
 class WalletCard extends StatelessWidget {
   const WalletCard({
@@ -11,6 +12,7 @@ class WalletCard extends StatelessWidget {
     required this.currency,
     required this.type,
     this.lastFourDigit,
+    this.tier = CreditCardTier.classic,
   });
 
   final String name;
@@ -18,6 +20,7 @@ class WalletCard extends StatelessWidget {
   final String currency;
   final WalletCardType type;
   final String? lastFourDigit;
+  final CreditCardTier tier;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +34,10 @@ class WalletCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
         gradient: gradient,
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withOpacity(0.3),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -66,10 +69,10 @@ class WalletCard extends StatelessWidget {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withOpacity(0.1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: Colors.white.withOpacity(0.1),
                     blurRadius: 40,
                     spreadRadius: 20,
                   ),
@@ -91,9 +94,9 @@ class WalletCard extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: Colors.white.withOpacity(0.1),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withOpacity(0.2),
                         ),
                       ),
                       child: Icon(icon, color: Colors.white, size: 20),
@@ -105,10 +108,10 @@ class WalletCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: Colors.black.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Colors.white.withOpacity(0.2),
                           ),
                         ),
                         child: Text(
@@ -130,7 +133,7 @@ class WalletCard extends StatelessWidget {
                       name,
                       style: GoogleFonts.manrope(
                         fontSize: 12,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -166,14 +169,55 @@ class WalletCard extends StatelessWidget {
   }
 
   LinearGradient _getGradient() {
+    if (type == WalletCardType.credit) {
+      switch (tier) {
+        case CreditCardTier.classic:
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xff4f46e5).withOpacity(0.4),
+              const Color(0xff0f0c1d).withOpacity(0.6),
+            ],
+          );
+        case CreditCardTier.gold:
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xfffbbf24).withOpacity(0.4),
+              const Color(0xff78350f).withOpacity(0.6),
+            ],
+          );
+        case CreditCardTier.platinum:
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xff94a3b8).withOpacity(0.4),
+              const Color(0xff334155).withOpacity(0.6),
+            ],
+          );
+        case CreditCardTier.black:
+          return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xff1e293b).withOpacity(0.6),
+              const Color(0xff000000).withOpacity(0.8),
+            ],
+          );
+      }
+    }
+
     switch (type) {
       case WalletCardType.visa:
         return LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xff4f46e5).withValues(alpha: 0.4),
-            const Color(0xff0f0c1d).withValues(alpha: 0.6),
+            const Color(0xff4f46e5).withOpacity(0.4),
+            const Color(0xff0f0c1d).withOpacity(0.6),
           ],
         );
       case WalletCardType.amex:
@@ -181,8 +225,8 @@ class WalletCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xff1e293b).withValues(alpha: 0.6),
-            const Color(0xff000000).withValues(alpha: 0.8),
+            const Color(0xff1e293b).withOpacity(0.6),
+            const Color(0xff000000).withOpacity(0.8),
           ],
         );
       case WalletCardType.savings:
@@ -190,14 +234,21 @@ class WalletCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xff701a75).withValues(alpha: 0.4),
-            const Color(0xff312e81).withValues(alpha: 0.6),
+            const Color(0xff701a75).withOpacity(0.4),
+            const Color(0xff312e81).withOpacity(0.6),
           ],
         );
+      case WalletCardType.credit:
+        return const LinearGradient(colors: [Colors.black, Colors.black45]);
     }
   }
 
   IconData _getIcon() {
+    if (type == WalletCardType.credit) {
+      return tier == CreditCardTier.black || tier == CreditCardTier.platinum
+          ? Icons.diamond_outlined
+          : Icons.credit_card_rounded;
+    }
     switch (type) {
       case WalletCardType.visa:
         return Icons.account_balance;
@@ -205,16 +256,23 @@ class WalletCard extends StatelessWidget {
         return Icons.diamond_outlined;
       case WalletCardType.savings:
         return Icons.savings_outlined;
+      case WalletCardType.credit:
+        return Icons.credit_card;
     }
   }
 
   String? _getTag() {
+    if (type == WalletCardType.credit) {
+      return tier.name.toUpperCase();
+    }
     switch (type) {
       case WalletCardType.visa:
         return 'VISA';
       case WalletCardType.amex:
         return 'AMEX';
       case WalletCardType.savings:
+        return null;
+      case WalletCardType.credit:
         return null;
     }
   }

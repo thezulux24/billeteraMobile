@@ -13,27 +13,30 @@ class AppTheme {
           brightness: Brightness.light,
         ).copyWith(
           secondary: AppColors.accent,
-          surface: Colors.white.withValues(alpha: 0.86),
+          surface: Colors.white,
+          onSurface: const Color(0xff1e1b4b),
+          onSurfaceVariant: const Color(0xff475569),
         );
 
-    final textTheme = GoogleFonts.plusJakartaSansTextTheme().copyWith(
-      displaySmall: GoogleFonts.sora(
+    final textTheme = GoogleFonts.manropeTextTheme().copyWith(
+      displaySmall: GoogleFonts.manrope(
         fontSize: 36,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.8,
-        height: 1.1,
+        color: const Color(0xff1e1b4b),
       ),
-      headlineSmall: GoogleFonts.sora(
+      headlineSmall: GoogleFonts.manrope(
         fontSize: 25,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.4,
+        color: const Color(0xff1e1b4b),
       ),
-      titleMedium: GoogleFonts.plusJakartaSans(
+      bodyLarge: GoogleFonts.manrope(
         fontSize: 16,
-        fontWeight: FontWeight.w600,
+        color: const Color(0xff1e1b4b),
       ),
-      bodyLarge: GoogleFonts.plusJakartaSans(fontSize: 16, height: 1.35),
-      bodyMedium: GoogleFonts.plusJakartaSans(fontSize: 14, height: 1.35),
+      bodyMedium: GoogleFonts.manrope(
+        fontSize: 14,
+        color: const Color(0xff475569),
+      ),
     );
 
     return ThemeData(
@@ -41,28 +44,31 @@ class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: Colors.transparent,
       textTheme: textTheme,
+      iconTheme: const IconThemeData(color: Color(0xff1e1b4b)),
       appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: false,
         backgroundColor: Colors.transparent,
-        foregroundColor: Color(0xFF103743),
+        foregroundColor: Color(0xff1e1b4b),
+        iconTheme: IconThemeData(color: Color(0xff1e1b4b)),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          textStyle: GoogleFonts.plusJakartaSans(
+          foregroundColor: const Color(0xff4f46e5),
+          textStyle: GoogleFonts.manrope(
             fontWeight: FontWeight.w600,
             letterSpacing: 0.1,
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+        labelStyle: GoogleFonts.manrope(fontWeight: FontWeight.w500),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
         ),
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.55),
+        fillColor: Colors.black.withValues(alpha: 0.05),
       ),
     );
   }

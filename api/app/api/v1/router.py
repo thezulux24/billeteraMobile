@@ -4,6 +4,9 @@ from app.api.v1.endpoints.auth import router as auth_router
 from app.api.v1.endpoints.bank_account import router as bank_account_router
 from app.api.v1.endpoints.cash_wallet import router as cash_wallet_router
 from app.api.v1.endpoints.profile import router as profile_router
+from app.api.v1.endpoints.credit_card import router as credit_card_router
+from app.api.v1.endpoints.category import router as category_router
+from app.api.v1.endpoints.transaction import router as transaction_router
 
 api_v1_router = APIRouter()
 api_v1_router.include_router(auth_router, prefix="/auth", tags=["auth"])
@@ -17,4 +20,19 @@ api_v1_router.include_router(
     bank_account_router,
     prefix="/bank-accounts",
     tags=["bank_accounts"],
+)
+api_v1_router.include_router(
+    credit_card_router,
+    prefix="/credit-cards",
+    tags=["credit_cards"],
+)
+api_v1_router.include_router(
+    category_router,
+    prefix="/categories",
+    tags=["categories"],
+)
+api_v1_router.include_router(
+    transaction_router,
+    prefix="/transactions",
+    tags=["transactions"],
 )

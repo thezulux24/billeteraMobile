@@ -29,6 +29,7 @@ create table if not exists public.credit_cards (
   user_id uuid not null references auth.users(id) on delete cascade,
   name text not null,
   issuer text,
+  tier text check (tier in ('classic', 'gold', 'platinum', 'black')) default 'classic',
   credit_limit numeric(14,2) not null default 0,
   current_debt numeric(14,2) not null default 0,
   statement_day smallint check (statement_day between 1 and 31),

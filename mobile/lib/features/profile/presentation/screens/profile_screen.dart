@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/premium_bottom_nav.dart';
 import '../../../auth/providers/auth_notifier.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -16,6 +18,10 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+    final isDark = theme.brightness == Brightness.dark;
+
     final auth = ref.watch(authNotifierProvider);
     final userEmail = auth.session?.email ?? 'Alex Sterling';
     final userName = userEmail.split('@').first;
@@ -43,12 +49,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: Icons.arrow_back_ios_new_rounded,
                       onPressed: () => context.go('/home'),
                     ),
-                    const Text(
+                    Text(
                       'Profile',
-                      style: TextStyle(
+                      style: GoogleFonts.manrope(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: onSurface,
                       ),
                     ),
                     _IconBtn(icon: Icons.edit_outlined, onPressed: () {}),
@@ -74,9 +80,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.white.withValues(alpha: 0.1),
+                              color: AppColors.glassBackground(context),
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.2),
+                                color: AppColors.glassBorder(context),
                               ),
                             ),
                             child: ClipRRect(
@@ -94,12 +100,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               color: const Color(0xff14b8a6),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xff0f0e17),
+                                color: isDark
+                                    ? const Color(0xff0f0e17)
+                                    : Colors.white,
                                 width: 4,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 8,
                                 ),
                               ],
@@ -115,10 +123,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       const SizedBox(height: 16),
                       Text(
                         capitalizedName,
-                        style: const TextStyle(
+                        style: GoogleFonts.manrope(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: onSurface,
                         ),
                       ),
                       const Text(
@@ -257,11 +265,15 @@ class _IconBtn extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
+          color: AppColors.glassBackground(context),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: AppColors.glassBorder(context)),
         ),
-        child: Icon(icon, color: const Color(0xffcbd5e1), size: 20),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          size: 20,
+        ),
       ),
     );
   }
@@ -276,9 +288,9 @@ class _SettingsGroup extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: AppColors.glassBackground(context),
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: AppColors.glassBorder(context)),
       ),
       child: Column(children: items),
     );
@@ -320,10 +332,10 @@ class _SettingsItem extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: GoogleFonts.manrope(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),

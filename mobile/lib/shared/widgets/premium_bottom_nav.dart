@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class PremiumBottomNav extends StatelessWidget {
   const PremiumBottomNav({
@@ -14,18 +15,23 @@ class PremiumBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       height: 100,
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: const Color(0xff1b1933).withValues(alpha: 0.7),
+          color: isDark
+              ? const Color(0xff1b1933).withValues(alpha: 0.8)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: AppColors.glassBorder(context)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
               blurRadius: 32,
               offset: const Offset(0, 8),
             ),

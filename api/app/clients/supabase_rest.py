@@ -184,6 +184,172 @@ class SupabaseRestClient:
             )
         return data[0]
 
+    async def list_credit_cards(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+    ) -> list[dict[str, Any]]:
+        url = (
+            f"{self._base_url}/rest/v1/credit_cards"
+            f"?select=id,name,issuer,credit_limit,current_debt,statement_day,due_day,currency,created_at,updated_at"
+            f"&user_id=eq.{user_id}&deleted_at=is.null"
+            "&order=created_at.desc"
+        )
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.get(url, headers=self._headers(access_token=access_token))
+        return self._unwrap_response(response)
+
+    async def create_credit_card(
+        self,
+        *,
+        access_token: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = f"{self._base_url}/rest/v1/credit_cards"
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.post(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=500,
+                code="CREDIT_CARD_CREATE_FAILED",
+                message="Credit card could not be created.",
+            )
+        return data[0]
+
+    async def update_credit_card(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+        card_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = (
+            f"{self._base_url}/rest/v1/credit_cards"
+            f"?id=eq.{card_id}&user_id=eq.{user_id}&deleted_at=is.null"
+        )
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.patch(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=404,
+                code="CREDIT_CARD_NOT_FOUND",
+                message="Credit card not found.",
+            )
+        return data[0]
+
+    async def list_categories(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+    ) -> list[dict[str, Any]]:
+        # Includes both system and user categories
+        url = (
+            f"{self._base_url}/rest/v1/categories"
+            f"?select=id,name,kind,color,icon,is_system,created_at,updated_at"
+            f"&or=(user_id.eq.{user_id},is_system.eq.true)&deleted_at=is.null"
+            "&order=name.asc"
+        )
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.get(url, headers=self._headers(access_token=access_token))
+        return self._unwrap_response(response)
+
+    async def create_category(
+        self,
+        *,
+        access_token: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = f"{self._base_url}/rest/v1/categories"
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.post(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=500,
+                code="CATEGORY_CREATE_FAILED",
+                message="Category could not be created.",
+            )
+        return data[0]
+
+    async def update_category(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+        category_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = (
+            f"{self._base_url}/rest/v1/categories"
+            f"?id=eq.{category_id}&user_id=eq.{user_id}&deleted_at=is.null"
+        )
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.patch(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=404,
+                code="CATEGORY_NOT_FOUND",
+                message="Category not found.",
+            )
+        return data[0]
+
+    async def list_transactions(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> list[dict[str, Any]]:
+        url = (
+            f"{self._base_url}/rest/v1/transactions"
+            f"?select=id,kind,amount,currency,description,occurred_at,category_id,cash_wallet_id,bank_account_id,credit_card_id,target_cash_wallet_id,target_bank_account_id,created_at,updated_at"
+            f"&user_id=eq.{user_id}&deleted_at=is.null"
+            f"&order=occurred_at.desc&limit={limit}&offset={offset}"
+        )
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.get(url, headers=self._headers(access_token=access_token))
+        return self._unwrap_response(response)
+
+    async def create_transaction(
+        self,
+        *,
+        access_token: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = f"{self._base_url}/rest/v1/transactions"
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.post(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=500,
+                code="TRANSACTION_CREATE_FAILED",
+                message="Transaction could not be created.",
+            )
+        return data[0]
+
     @staticmethod
     def _unwrap_response(response: httpx.Response) -> list[dict[str, Any]]:
         try:

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/theme/app_colors.dart';
 
 class InsightCard extends StatelessWidget {
   const InsightCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final onSurface = theme.colorScheme.onSurface;
+
     return Container(
       padding: const EdgeInsets.all(1),
       decoration: BoxDecoration(
@@ -21,7 +25,7 @@ class InsightCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: AppColors.glassBackground(context),
           borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
@@ -52,7 +56,7 @@ class InsightCard extends StatelessWidget {
                     text: TextSpan(
                       style: GoogleFonts.manrope(
                         fontSize: 14,
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: onSurface.withValues(alpha: 0.9),
                         height: 1.5,
                       ),
                       children: [
@@ -61,13 +65,21 @@ class InsightCard extends StatelessWidget {
                           text: '15% more ',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange[300],
-                            shadows: [
-                              Shadow(
-                                color: Colors.orange.withValues(alpha: 0.4),
-                                blurRadius: 8,
-                              ),
-                            ],
+                            color:
+                                Colors.orange[theme.brightness ==
+                                        Brightness.dark
+                                    ? 300
+                                    : 700],
+                            shadows: theme.brightness == Brightness.dark
+                                ? [
+                                    Shadow(
+                                      color: Colors.orange.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      blurRadius: 8,
+                                    ),
+                                  ]
+                                : null,
                           ),
                         ),
                         const TextSpan(

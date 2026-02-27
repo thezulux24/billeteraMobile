@@ -12,6 +12,9 @@ from app.services.auth_service import AuthService
 from app.services.bank_account_service import BankAccountService
 from app.services.cash_wallet_service import CashWalletService
 from app.services.profile_service import ProfileService
+from app.services.credit_card_service import CreditCardService
+from app.services.category_service import CategoryService
+from app.services.transaction_service import TransactionService
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
@@ -48,6 +51,24 @@ def get_bank_account_service(
     rest_client: SupabaseRestClient = Depends(get_rest_client),
 ) -> BankAccountService:
     return BankAccountService(rest_client)
+
+
+def get_credit_card_service(
+    rest_client: SupabaseRestClient = Depends(get_rest_client),
+) -> CreditCardService:
+    return CreditCardService(rest_client)
+
+
+def get_category_service(
+    rest_client: SupabaseRestClient = Depends(get_rest_client),
+) -> CategoryService:
+    return CategoryService(rest_client)
+
+
+def get_transaction_service(
+    rest_client: SupabaseRestClient = Depends(get_rest_client),
+) -> TransactionService:
+    return TransactionService(rest_client)
 
 
 def get_jwt_verifier(

@@ -8,7 +8,8 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const ProviderScope(child: BilleteraApp()));
+    await tester.pump(); // Allow widgets to build
 
-    expect(find.text('billeteraMobile'), findsOneWidget);
+    expect(find.text('Securely loading your finances...'), findsOneWidget);
   });
 }

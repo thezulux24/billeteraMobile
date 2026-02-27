@@ -24,4 +24,20 @@ class AppColors {
   static const Color glassDark = Color(0x1AFFFFFF);
   static const Color glassBorderLight = Color(0xA6FFFFFF);
   static const Color glassBorderDark = Color(0x26FFFFFF);
+
+  // Semantic glass colors
+  static Color glassBackground(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? Colors.white.withValues(alpha: 0.05)
+      : Colors.black.withValues(alpha: 0.05);
+
+  static Color glassBorder(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? Colors.white.withValues(alpha: 0.15)
+      : Colors.black.withValues(alpha: 0.1);
+
+  static Color glassLabel(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+      ? const Color(0xffa5b4fc)
+      : const Color(0xff4f46e5).withValues(alpha: 0.7);
 }

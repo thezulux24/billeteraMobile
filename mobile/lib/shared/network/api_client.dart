@@ -6,6 +6,9 @@ import '../../features/bank_accounts/data/bank_account_api.dart';
 import '../../features/auth/data/auth_api.dart';
 import '../../features/cash_wallets/data/cash_wallet_api.dart';
 import '../../features/profile/data/profile_api.dart';
+import '../../features/credit_cards/data/credit_card_api.dart';
+import '../../features/categories/data/category_api.dart';
+import '../../features/transactions/data/transaction_api.dart';
 import '../services/secure_storage_service.dart';
 import '../services/session_store.dart';
 import 'auth_interceptor.dart';
@@ -72,4 +75,16 @@ final cashWalletApiProvider = Provider<CashWalletApi>((ref) {
 
 final bankAccountApiProvider = Provider<BankAccountApi>((ref) {
   return BankAccountApi(ref.watch(privateDioProvider));
+});
+
+final creditCardApiProvider = Provider<CreditCardApi>((ref) {
+  return CreditCardApi(ref.watch(privateDioProvider));
+});
+
+final categoryApiProvider = Provider<CategoryApi>((ref) {
+  return CategoryApi(ref.watch(privateDioProvider));
+});
+
+final transactionApiProvider = Provider<TransactionApi>((ref) {
+  return TransactionApi(ref.watch(privateDioProvider));
 });

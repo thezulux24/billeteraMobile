@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liquid Glass New Account Refined</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7C3AED", // Vibrant Purple
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0F0E17",
+                        accent: {
+                            purple: "#A855F7",
+                            teal: "#2DD4BF",
+                            gold: "#FACC15",
+                        }
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"],
+                        body: ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                        'glass': '32px',
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                        'glass': '20px',
+                    }
+                },
+            },
+        };
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-input {
+            background: rgba(30, 30, 45, 0.3);border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);}.glass-input:-webkit-autofill,
+        .glass-input:-webkit-autofill:hover, 
+        .glass-input:-webkit-autofill:focus, 
+        .glass-input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px rgba(30, 30, 45, 0.8) inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+        .glass-input::placeholder {
+            color: #94a3b8;}
+        .glass-input:focus {
+            background: rgba(30, 30, 45, 0.5);
+            border-color: rgba(255, 255, 255, 0.3);
+            outline: none;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.2), inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+        .glass-segmented-control {
+            background: rgba(30, 30, 45, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+        }
+        .neon-glow-teal {
+            box-shadow: 0 0 15px rgba(45, 212, 191, 0.3);
+        }
+        .ambient-blur {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+        .status-bar-spacer {
+            height: env(safe-area-inset-top, 44px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen overflow-hidden flex flex-col">
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="ambient-blur bg-primary -top-20 -right-20"></div>
+<div class="ambient-blur bg-accent-teal bottom-1/4 -left-20"></div>
+</div>
+<div class="relative z-10 flex flex-col h-screen">
+<header class="px-6 pt-12 pb-6">
+<div class="flex justify-between items-center mb-1">
+<h1 class="text-3xl font-extrabold tracking-tight">Wallet</h1>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full glass-input flex items-center justify-center">
+<span class="material-icons-round text-xl text-white">search</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-input flex items-center justify-center relative">
+<span class="material-icons-round text-xl text-white">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-accent-teal rounded-full"></span>
+</button>
+</div>
+</div>
+<p class="text-slate-500 dark:text-slate-400 font-medium">Manage your digital assets</p>
+</header>
+<div class="flex-grow"></div>
+<div class="liquid-glass rounded-t-glass px-6 pt-4 pb-10 flex flex-col animate-slide-up">
+<div class="w-12 h-1.5 bg-white/20 rounded-full self-center mb-8"></div>
+<h2 class="text-2xl font-bold mb-6 text-white">New Account</h2>
+<div class="glass-segmented-control p-1 rounded-2xl flex mb-8">
+<button class="flex-1 py-2.5 text-sm font-semibold rounded-xl text-slate-400 hover:text-white transition-colors">Bank</button>
+<button class="flex-1 py-2.5 text-sm font-semibold rounded-xl text-slate-400 hover:text-white transition-colors">Cash</button>
+<button class="flex-1 py-2.5 text-sm font-bold rounded-xl bg-primary text-white neon-glow-purple shadow-lg shadow-purple-500/20">Credit</button>
+</div>
+<div class="space-y-4 mb-8">
+<div class="relative group">
+<input class="glass-input w-full px-5 py-4 rounded-2xl text-white placeholder:text-slate-400 focus:ring-0" placeholder="Account Name (e.g. Main Savings)" type="text"/>
+</div>
+<div class="relative group">
+<span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white/80 transition-colors">account_balance</span>
+<input class="glass-input w-full pl-12 pr-5 py-4 rounded-2xl text-white placeholder:text-slate-400 focus:ring-0" placeholder="Bank Name" type="text"/>
+</div>
+<div class="flex gap-4">
+<input class="glass-input flex-1 px-5 py-4 rounded-2xl text-white placeholder:text-slate-400 focus:ring-0" placeholder="Last 4 Digits" type="text"/>
+<div class="glass-input flex-1 px-5 py-4 rounded-2xl flex justify-between items-center cursor-pointer hover:bg-white/10 transition-colors">
+<span class="text-white font-medium">Visa</span>
+<span class="material-icons-round text-white/40">expand_more</span>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold uppercase tracking-wider text-white/40 mb-3 px-1">Card Tier</p>
+<div class="flex flex-wrap gap-2">
+<button class="px-5 py-2 rounded-full glass-input text-sm font-bold bg-white/10 text-white border-white/20 hover:bg-white/20 transition-all">Classic</button>
+<button class="px-5 py-2 rounded-full glass-input text-sm font-bold border-accent-gold/40 text-accent-gold hover:bg-accent-gold/10 transition-all">Gold</button>
+<button class="px-5 py-2 rounded-full glass-input text-sm font-bold border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all">Platinum</button>
+<button class="px-5 py-2 rounded-full glass-input text-sm font-bold border-white/20 text-slate-300 hover:text-white hover:bg-white/10 transition-all">Black</button>
+</div>
+</div>
+<div class="relative group">
+<span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white/80 transition-colors">speed</span>
+<input class="glass-input w-full pl-12 pr-5 py-4 rounded-2xl text-white placeholder:text-slate-400 focus:ring-0" placeholder="Credit Limit" type="number"/>
+</div>
+</div>
+<button class="w-full py-5 rounded-3xl bg-primary text-white font-extrabold text-lg transition-all active:scale-[0.98] shadow-lg shadow-primary/40 hover:shadow-primary/60 hover:-translate-y-0.5">
+                Create Account
+            </button>
+<div class="mt-8 self-center">
+<div class="w-32 h-1.5 bg-white/20 rounded-full"></div>
+</div>
+</div>
+</div>
+<style>
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
+</body></html>

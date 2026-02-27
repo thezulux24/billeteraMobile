@@ -18,12 +18,14 @@ class GlassScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If it's the premium design, we always want the dark aesthetic from the reference
-    final effectiveIsDark =
-        isPremium || Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     final backgroundColor = isPremium
-        ? AppColors.stitchDarkBackground
-        : (effectiveIsDark ? Colors.black : Colors.white);
+        ? (isDark
+              ? AppColors.stitchDarkBackground
+              : AppColors.lightBackgroundTop)
+        : (isDark ? Colors.black : Colors.white);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -38,7 +40,7 @@ class GlassScaffold extends StatelessWidget {
               : LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: effectiveIsDark
+                  colors: isDark
                       ? const [
                           AppColors.darkBackgroundTop,
                           AppColors.darkBackgroundBottom,
@@ -51,22 +53,8 @@ class GlassScaffold extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            if (showOrbs) ..._buildOrbs(effectiveIsDark),
-            SafeArea(
-              child: isPremium
-                  ? Theme(
-                      data: ThemeData(
-                        brightness: Brightness.dark,
-                        scaffoldBackgroundColor: Colors.transparent,
-                        textTheme: ThemeData.dark().textTheme.apply(
-                          bodyColor: Colors.white,
-                          displayColor: Colors.white,
-                        ),
-                      ),
-                      child: child,
-                    )
-                  : child,
-            ),
+            if (showOrbs) ..._buildOrbs(isDark),
+            SafeArea(child: child),
           ],
         ),
       ),

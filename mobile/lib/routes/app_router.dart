@@ -10,6 +10,8 @@ import '../features/home/presentation/screens/home_screen.dart';
 import '../features/analytics/presentation/screens/analytics_screen.dart';
 import '../features/wallet/presentation/screens/wallet_assets_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/wallet/presentation/screens/account_details_screen.dart';
+import 'package:flutter/material.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authNotifierProvider);
@@ -42,6 +44,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/account-details',
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return AccountDetailsScreen(
+            assetId: args['assetId'] as String,
+            assetName: args['assetName'] as String,
+            assetSubtitle: args['subtitle'] as String?,
+            assetAmount: args['amount'] as String,
+            accentColor: args['accentColor'] as Color,
+          );
+        },
       ),
     ],
     redirect: (context, state) {

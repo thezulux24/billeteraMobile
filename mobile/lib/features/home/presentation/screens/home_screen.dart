@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/theme/app_colors.dart';
 
 import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/metric_card.dart';
@@ -9,10 +10,11 @@ import '../../../../shared/widgets/wallet_card.dart';
 import '../../../../shared/widgets/monthly_overview_chart.dart';
 import '../../../../shared/widgets/insight_card.dart';
 import '../../../../shared/widgets/premium_bottom_nav.dart';
-import '../../../../shared/widgets/app_popup.dart';
 import '../../../auth/providers/auth_notifier.dart';
 import '../../../bank_accounts/providers/bank_account_notifier.dart';
 import '../../../cash_wallets/providers/cash_wallet_notifier.dart';
+import '../../../credit_cards/providers/credit_card_notifier.dart';
+import '../../../../shared/widgets/add_transaction_bottom_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -29,12 +31,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       await Future.wait([
         ref.read(cashWalletNotifierProvider).load(),
         ref.read(bankAccountNotifierProvider).load(),
+        ref.read(creditCardNotifierProvider).load(),
       ]);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final auth = ref.watch(authNotifierProvider);
     final String? email = auth.session?.email;
     final rawName = (email != null && email.contains('@'))
@@ -44,10 +48,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ? rawName[0].toUpperCase() + rawName.substring(1).toLowerCase()
         : 'Alexandra';
 
-    // Mock constants for visual parity with design reference
-    const mockBalance = 142590.00;
-    const mockAssets = 156200.00;
-    const mockDebt = 13610.00;
+    final bankState = ref.watch(bankAccountNotifierProvider);
+    final cashState = ref.watch(cashWalletNotifierProvider);
+    final creditState = ref.watch(creditCardNotifierProvider);
+
+    final totalAssets = bankState.totalBalance + cashState.totalBalance;
+    final totalDebt = creditState.totalDebt;
+    final netWorth = totalAssets - totalDebt;
 
     return GlassScaffold(
       isPremium: true,
@@ -57,6 +64,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Positioned.fill(
               child: RefreshIndicator(
                 onRefresh: _refreshAll,
+                color: const Color(0xff4f46e5),
+                backgroundColor: theme.brightness == Brightness.dark
+                    ? const Color(0xff1b1933)
+                    : Colors.white,
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   children: [
@@ -74,7 +85,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   width: 2,
                                 ),
                               ),
@@ -95,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   style: GoogleFonts.manrope(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0x99a5b4fc),
+                                    color: AppColors.glassLabel(context),
                                     letterSpacing: 1.5,
                                   ),
                                 ),
@@ -104,7 +117,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   style: GoogleFonts.manrope(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: theme.colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -115,18 +128,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.05),
+                            color: AppColors.glassBackground(context),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.1),
+                              color: AppColors.glassBorder(context),
                             ),
                           ),
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.notifications_none_rounded,
-                                color: Colors.white,
+                                color: theme.colorScheme.onSurface,
                                 size: 22,
                               ),
                               Positioned(
@@ -139,7 +152,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     color: const Color(0xfff43f5e),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: const Color(0xff0f0c1d),
+                                      color: theme.brightness == Brightness.dark
+                                          ? const Color(0xff0f0c1d)
+                                          : Colors.white,
                                       width: 1.5,
                                     ),
                                   ),
@@ -154,9 +169,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     // Net Worth Summary
                     MetricCard(
-                      totalBalance: mockBalance,
-                      totalAssets: mockAssets,
-                      creditDebt: mockDebt,
+                      totalBalance: netWorth,
+                      totalAssets: totalAssets,
+                      creditDebt: totalDebt,
                     ),
                     const SizedBox(height: 36),
 
@@ -191,34 +206,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        children: const [
-                          Padding(
-                            padding: EdgeInsets.only(right: 16),
-                            child: WalletCard(
-                              name: 'Main Checking',
-                              balance: 4250.0,
-                              currency: 'USD',
-                              type: WalletCardType.visa,
-                              lastFourDigit: '4250',
+                        children: [
+                          ...bankState.accounts.map(
+                            (acc) => Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: WalletCard(
+                                name: acc.name,
+                                balance: acc.balance,
+                                currency: acc.currency,
+                                type: WalletCardType.savings,
+                              ),
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 16),
-                            child: WalletCard(
-                              name: 'Platinum Card',
-                              balance: 1240.0,
-                              currency: 'USD',
-                              type: WalletCardType.amex,
-                              lastFourDigit: '1240',
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(right: 16),
-                            child: WalletCard(
-                              name: 'High Yield Savings',
-                              balance: 56000.0,
-                              currency: 'USD',
-                              type: WalletCardType.savings,
+                          ...creditState.cards.map(
+                            (card) => Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: WalletCard(
+                                name: card.name,
+                                balance: card.currentDebt,
+                                currency: card.currency,
+                                type: WalletCardType.credit,
+                                tier: card.tier,
+                                lastFourDigit: card.lastFourDigits,
+                              ),
                             ),
                           ),
                         ],
@@ -243,7 +253,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               right: 0,
               child: PremiumBottomNav(
                 currentIndex: 0,
-                onAddPressed: _openCreateWalletSheet,
+                onAddPressed: _openAddTransactionSheet,
                 onTabSelected: (index) {
                   if (index == 1) context.go('/analytics');
                   if (index == 2) context.go('/wallet');
@@ -261,247 +271,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await Future.wait([
       ref.read(cashWalletNotifierProvider).load(),
       ref.read(bankAccountNotifierProvider).load(),
+      ref.read(creditCardNotifierProvider).load(),
     ]);
   }
 
-  Future<void> _openCreateWalletSheet() async {
+  Future<void> _openAddTransactionSheet() async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return _CreateAssetSheet(
-          title: 'Create Asset',
-          submitLabel: 'Save Asset',
-          onSubmit:
-              ({
-                required String name,
-                required double amount,
-                required String currency,
-                String? extraValue,
-              }) async {
-                final created = await ref
-                    .read(cashWalletNotifierProvider)
-                    .createWallet(
-                      name: name,
-                      balance: amount,
-                      currency: currency,
-                    );
-                if (!mounted) return;
-                if (created) {
-                  Navigator.pop(context);
-                  showAppPopup(
-                    context,
-                    message: 'Wallet created successfully.',
-                    type: AppPopupType.success,
-                  );
-                } else {
-                  final error = ref.read(cashWalletNotifierProvider).error;
-                  showAppPopup(
-                    context,
-                    message: error ?? 'Could not create wallet.',
-                    type: AppPopupType.error,
-                  );
-                }
-              },
-        );
+        return const AddTransactionBottomSheet();
       },
-    );
-  }
-}
-
-typedef _CreateAssetSheetSubmit =
-    Future<void> Function({
-      required String name,
-      required double amount,
-      required String currency,
-      String? extraValue,
-    });
-
-class _CreateAssetSheet extends StatefulWidget {
-  const _CreateAssetSheet({
-    required this.title,
-    required this.submitLabel,
-    required this.onSubmit,
-  });
-
-  final String title;
-  final String submitLabel;
-  final _CreateAssetSheetSubmit onSubmit;
-
-  @override
-  State<_CreateAssetSheet> createState() => _CreateAssetSheetState();
-}
-
-class _CreateAssetSheetState extends State<_CreateAssetSheet> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameController;
-  late final TextEditingController _amountController;
-  late final TextEditingController _currencyController;
-  late final TextEditingController _extraController;
-  bool _submitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-    _amountController = TextEditingController(text: '0');
-    _currencyController = TextEditingController(text: 'USD');
-    _extraController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _amountController.dispose();
-    _currencyController.dispose();
-    _extraController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (_submitting) return;
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-
-    FocusScope.of(context).unfocus();
-    setState(() => _submitting = true);
-    try {
-      await widget.onSubmit(
-        name: _nameController.text.trim(),
-        amount: double.parse(_amountController.text.trim()),
-        currency: _currencyController.text.trim().toUpperCase(),
-        extraValue: _extraController.text.trim().isEmpty
-            ? null
-            : _extraController.text.trim(),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _submitting = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final viewInsetsBottom = MediaQuery.of(context).viewInsets.bottom;
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          bottom: viewInsetsBottom + 24,
-          top: 24,
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: const Color(0xff1b1933),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _SheetField(
-                  controller: _nameController,
-                  label: 'Name',
-                  validator: (v) => v?.isEmpty ?? true ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                _SheetField(
-                  controller: _amountController,
-                  label: 'Initial Balance',
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _SheetField(
-                  controller: _currencyController,
-                  label: 'Currency (ISO)',
-                ),
-                const SizedBox(height: 24),
-                GestureDetector(
-                  onTap: _submit,
-                  child: Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xff4f46e5), Color(0xff7c3aed)],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    alignment: Alignment.center,
-                    child: _submitting
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text(
-                            widget.submitLabel,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SheetField extends StatelessWidget {
-  const _SheetField({
-    required this.controller,
-    required this.label,
-    this.validator,
-    this.keyboardType,
-  });
-
-  final TextEditingController controller;
-  final String label;
-  final String? Function(String?)? validator;
-  final TextInputType? keyboardType;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Color(0xff94a3b8)),
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.05),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-      ),
     );
   }
 }
