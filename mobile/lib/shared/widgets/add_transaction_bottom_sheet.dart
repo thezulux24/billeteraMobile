@@ -57,147 +57,176 @@ class _AddTransactionBottomSheetState
       maxChildSize: 0.95,
       expand: false,
       builder: (context, scrollController) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(36)),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.glassBackground(
-                  context,
-                ).withValues(alpha: 0.7),
+                gradient: isDark
+                    ? const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xCC1A1530), // deep indigo translucent
+                          Color(0xEE0F0E1C), // near-black
+                        ],
+                      )
+                    : const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xE6F5F3FF), Color(0xF0ECEEFF)],
+                      ),
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(32),
+                  top: Radius.circular(36),
                 ),
-                border: Border.all(color: AppColors.glassBorder(context)),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.7),
+                  width: 1.2,
+                ),
               ),
               child: Form(
                 key: _formKey,
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                child: Column(
                   children: [
-                    Center(
-                      child: Container(
-                        width: 48,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: onSurface.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(2),
+                    Expanded(
+                      child: ListView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        children: [
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.25)
+                                    : Colors.black.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          Text(
+                            'New Transaction',
+                            style: GoogleFonts.manrope(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: onSurface,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Type Selector
+                          _buildSegmentedSelector(
+                            options: ['Income', 'Expense', 'Transfer'],
+                            selected: _transactionType,
+                            onChanged: (val) {
+                              setState(() {
+                                _transactionType = val;
+                                if (val == 'Income')
+                                  _selectedCategory =
+                                      PredefinedCategories.income.first;
+                                if (val == 'Expense')
+                                  _selectedCategory =
+                                      PredefinedCategories.expense.first;
+                                if (val == 'Transfer')
+                                  _selectedCategory =
+                                      PredefinedCategories.transfer.first;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 32),
+
+                          // Amount Field (Large)
+                          Text(
+                            'Amount',
+                            style: GoogleFonts.manrope(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _amountController,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.manrope(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: _transactionType == 'Income'
+                                  ? const Color(0xff4ade80)
+                                  : onSurface,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: '0.00',
+                              border: InputBorder.none,
+                              prefixText: '\$',
+                              prefixStyle: TextStyle(
+                                fontSize: 24,
+                                color: Color(0xff94a3b8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // Category Selector
+                          Text(
+                            'Category',
+                            style: GoogleFonts.manrope(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildCategoryGrid(),
+                          const SizedBox(height: 24),
+
+                          GlassTextField(
+                            controller: _descriptionController,
+                            label: 'Description (optional)',
+                            isPremium: true,
+                            prefixIcon: Icons.notes_rounded,
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Asset Selector
+                          Text(
+                            'Account / Wallet',
+                            style: GoogleFonts.manrope(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildAssetSelector(),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                    SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                        child: GlassButton(
+                          label: 'Save Transaction',
+                          isPremium: true,
+                          onPressed: _saveTransaction,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    Text(
-                      'New Transaction',
-                      style: GoogleFonts.manrope(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: onSurface,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Type Selector
-                    _buildSegmentedSelector(
-                      options: ['Income', 'Expense', 'Transfer'],
-                      selected: _transactionType,
-                      onChanged: (val) {
-                        setState(() {
-                          _transactionType = val;
-                          if (val == 'Income')
-                            _selectedCategory =
-                                PredefinedCategories.income.first;
-                          if (val == 'Expense')
-                            _selectedCategory =
-                                PredefinedCategories.expense.first;
-                          if (val == 'Transfer')
-                            _selectedCategory =
-                                PredefinedCategories.transfer.first;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Amount Field (Large)
-                    Text(
-                      'Amount',
-                      style: GoogleFonts.manrope(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _amountController,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.manrope(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: _transactionType == 'Income'
-                            ? const Color(0xff4ade80)
-                            : onSurface,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: '0.00',
-                        border: InputBorder.none,
-                        prefixText: '\$',
-                        prefixStyle: TextStyle(
-                          fontSize: 24,
-                          color: Color(0xff94a3b8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Category Selector
-                    Text(
-                      'Category',
-                      style: GoogleFonts.manrope(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildCategoryGrid(),
-                    const SizedBox(height: 24),
-
-                    GlassTextField(
-                      controller: _descriptionController,
-                      label: 'Description (optional)',
-                      isPremium: true,
-                      prefixIcon: Icons.notes_rounded,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Asset Selector
-                    Text(
-                      'Account / Wallet',
-                      style: GoogleFonts.manrope(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildAssetSelector(),
-
-                    const SizedBox(height: 48),
-                    GlassButton(
-                      label: 'Save Transaction',
-                      isPremium: true,
-                      onPressed: _saveTransaction,
-                    ),
-                    const SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -213,46 +242,97 @@ class _AddTransactionBottomSheetState
     required String selected,
     required ValueChanged<String> onChanged,
   }) {
-    final onSurface = Theme.of(context).colorScheme.onSurface;
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: onSurface.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: options.map((opt) {
-          final isSelected = opt == selected;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(opt),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.stitchIndigo
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  opt,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.manrope(
-                    fontWeight: isSelected
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color: isSelected
-                        ? Colors.white
-                        : onSurface.withValues(alpha: 0.6),
-                    fontSize: 13,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final totalW = constraints.maxWidth;
+        final padding = 4.0;
+        final itemW = (totalW - padding * 2) / options.length;
+        final selectedIndex = options.indexOf(selected);
+
+        return Container(
+          height: 52,
+          padding: EdgeInsets.all(padding),
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : Colors.black.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Stack(
+            children: [
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.easeOutExpo,
+                left: selectedIndex * itemW,
+                top: 0,
+                bottom: 0,
+                width: itemW,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.stitchIndigo,
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.25),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.stitchIndigo.withValues(
+                              alpha: 0.45,
+                            ),
+                            blurRadius: 14,
+                            spreadRadius: -2,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
-      ),
+              Row(
+                children: options.map((opt) {
+                  final isSelected = opt == selected;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => onChanged(opt),
+                      behavior: HitTestBehavior.opaque,
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeOut,
+                          style: GoogleFonts.manrope(
+                            fontSize: 13.5,
+                            fontWeight: isSelected
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : (isDark
+                                      ? Colors.white.withValues(alpha: 0.45)
+                                      : Colors.black.withValues(alpha: 0.45)),
+                          ),
+                          child: Text(opt),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

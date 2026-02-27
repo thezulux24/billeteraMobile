@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/bank_accounts/providers/bank_account_notifier.dart';
 import '../../features/cash_wallets/providers/cash_wallet_notifier.dart';
 import '../../features/credit_cards/providers/credit_card_notifier.dart';
-
+import '../../core/theme/app_colors.dart';
 // ─── Account Type ────────────────────────────────────────────────────────────
 
 enum _AccountType { bank, cash, credit }
@@ -123,53 +123,62 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
               ),
               child: Form(
                 key: _formKey,
-                child: ListView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
+                child: Column(
                   children: [
-                    // ── Drag handle ──────────────────────────────────────
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.25)
-                              : Colors.black.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(2),
+                    Expanded(
+                      child: ListView(
+                        controller: scrollController,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        children: [
+                          // ── Drag handle ──────────────────────────────────────
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.25)
+                                    : Colors.black.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+
+                          // ── Header ───────────────────────────────────────────
+                          _LiquidHeader(accountType: _accountType),
+                          const SizedBox(height: 28),
+
+                          // ── Type Selector (main feature) ─────────────────────
+                          _AnimatedTypeSelector(
+                            selected: _accountType,
+                            onChanged: _switchType,
+                          ),
+                          const SizedBox(height: 32),
+
+                          // ── Fields (fade when switching) ─────────────────────
+                          FadeTransition(
+                            opacity: _fadeAnim,
+                            child: _buildFields(isDark),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                    SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                        // ── CTA Button ───────────────────────────────────────
+                        child: _LiquidButton(
+                          label: 'Create Account',
+                          onPressed: _createAccount,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 28),
-
-                    // ── Header ───────────────────────────────────────────
-                    _LiquidHeader(accountType: _accountType),
-                    const SizedBox(height: 28),
-
-                    // ── Type Selector (main feature) ─────────────────────
-                    _AnimatedTypeSelector(
-                      selected: _accountType,
-                      onChanged: _switchType,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // ── Fields (fade when switching) ─────────────────────
-                    FadeTransition(
-                      opacity: _fadeAnim,
-                      child: _buildFields(isDark),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    // ── CTA Button ───────────────────────────────────────
-                    _LiquidButton(
-                      label: 'Create Account',
-                      onPressed: _createAccount,
-                    ),
-                    const SizedBox(height: 36),
                   ],
                 ),
               ),
@@ -308,11 +317,14 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
           .createWallet(name: name, balance: balance, currency: 'USD');
     } else {
       final limit = double.tryParse(_limitController.text) ?? 0.0;
+      final lastFour = _lastFourController.text.trim();
       success = await ref
           .read(creditCardNotifierProvider)
           .createCard(
             name: name,
-            issuer: bankName.isNotEmpty ? bankName : _cardProvider,
+            issuer: bankName.isNotEmpty ? bankName : null,
+            lastFour: lastFour.length == 4 ? lastFour : null,
+            cardProvider: _cardProvider.toLowerCase(),
             tier: _creditTier.toLowerCase(),
             creditLimit: limit,
             currentDebt: 0.0,
@@ -359,13 +371,13 @@ class _LiquidHeader extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             gradient: const LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+              colors: [AppColors.stitchPurple, AppColors.stitchIndigo],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4F46E5).withValues(alpha: 0.5),
+                color: AppColors.stitchIndigo.withValues(alpha: 0.5),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
@@ -505,7 +517,7 @@ class _SlidingPill extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+              colors: [AppColors.stitchPurple, AppColors.stitchIndigo],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -516,13 +528,13 @@ class _SlidingPill extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4F46E5).withValues(alpha: 0.45),
+                color: AppColors.stitchIndigo.withValues(alpha: 0.45),
                 blurRadius: 14,
                 spreadRadius: -2,
                 offset: const Offset(0, 3),
               ),
               BoxShadow(
-                color: const Color(0xFF7C3AED).withValues(alpha: 0.2),
+                color: AppColors.stitchPurple.withValues(alpha: 0.2),
                 blurRadius: 20,
                 spreadRadius: 0,
               ),
@@ -586,7 +598,7 @@ class _GlassFieldState extends State<_GlassField> {
   @override
   Widget build(BuildContext context) {
     final borderColor = _focused
-        ? const Color(0xFF7C3AED).withValues(alpha: 0.8)
+        ? AppColors.stitchPurple.withValues(alpha: 0.8)
         : widget.isDark
         ? Colors.white.withValues(alpha: 0.12)
         : Colors.black.withValues(alpha: 0.1);
@@ -597,12 +609,14 @@ class _GlassFieldState extends State<_GlassField> {
         color: widget.isDark
             ? Colors.white.withValues(alpha: _focused ? 0.08 : 0.05)
             : Colors.white.withValues(alpha: _focused ? 0.75 : 0.55),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderColor, width: _focused ? 1.5 : 1),
+        borderRadius: BorderRadius.circular(16),
+        border: _focused
+            ? Border.all(color: borderColor, width: 1.5)
+            : Border.all(color: Colors.transparent),
         boxShadow: _focused
             ? [
                 BoxShadow(
-                  color: const Color(0xFF4F46E5).withValues(alpha: 0.2),
+                  color: AppColors.stitchIndigo.withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 2),
                 ),
@@ -629,7 +643,7 @@ class _GlassFieldState extends State<_GlassField> {
                   widget.icon,
                   size: 20,
                   color: _focused
-                      ? const Color(0xFF7C3AED)
+                      ? AppColors.stitchPurple
                       : widget.isDark
                       ? Colors.white.withValues(alpha: 0.35)
                       : Colors.black.withValues(alpha: 0.3),
@@ -638,7 +652,7 @@ class _GlassFieldState extends State<_GlassField> {
           labelStyle: GoogleFonts.manrope(
             fontSize: 13,
             color: _focused
-                ? const Color(0xFF7C3AED)
+                ? AppColors.stitchPurple
                 : widget.isDark
                 ? Colors.white.withValues(alpha: 0.4)
                 : Colors.black.withValues(alpha: 0.4),
@@ -650,9 +664,11 @@ class _GlassFieldState extends State<_GlassField> {
                 : Colors.black.withValues(alpha: 0.2),
           ),
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
-            vertical: 14,
+            vertical: 18,
           ),
         ),
       ),
@@ -868,7 +884,7 @@ class _LiquidButtonState extends State<_LiquidButton>
           height: 56,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [Color(0xFF7C3AED), Color(0xFF4F46E5)],
+              colors: [AppColors.stitchPurple, AppColors.stitchIndigo],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -879,13 +895,13 @@ class _LiquidButtonState extends State<_LiquidButton>
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4F46E5).withValues(alpha: 0.45),
+                color: AppColors.stitchIndigo.withValues(alpha: 0.45),
                 blurRadius: 20,
                 spreadRadius: -2,
                 offset: const Offset(0, 6),
               ),
               BoxShadow(
-                color: const Color(0xFF7C3AED).withValues(alpha: 0.25),
+                color: AppColors.stitchPurple.withValues(alpha: 0.25),
                 blurRadius: 30,
                 offset: const Offset(0, 2),
               ),

@@ -52,6 +52,8 @@ class CreditCardNotifier extends ChangeNotifier {
   Future<bool> createCard({
     required String name,
     String? issuer,
+    String? lastFour,
+    String? cardProvider,
     required String tier,
     required double creditLimit,
     required double currentDebt,
@@ -67,11 +69,13 @@ class CreditCardNotifier extends ChangeNotifier {
       final created = await _creditCardApi.createCard(
         name: name,
         issuer: issuer,
+        lastFour: lastFour,
+        cardProvider: cardProvider,
         tier: tier,
         creditLimit: creditLimit,
         currentDebt: currentDebt,
         statementDay: statementDay,
-        due_day: dueDay,
+        dueDay: dueDay,
         currency: currency,
       );
       _cards = [created, ..._cards];

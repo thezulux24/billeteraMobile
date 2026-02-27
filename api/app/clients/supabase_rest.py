@@ -192,7 +192,7 @@ class SupabaseRestClient:
     ) -> list[dict[str, Any]]:
         url = (
             f"{self._base_url}/rest/v1/credit_cards"
-            f"?select=id,name,issuer,credit_limit,current_debt,statement_day,due_day,currency,created_at,updated_at"
+            f"?select=id,name,issuer,last_four,card_provider,tier,credit_limit,current_debt,statement_day,due_day,currency,created_at,updated_at"
             f"&user_id=eq.{user_id}&deleted_at=is.null"
             "&order=created_at.desc"
         )

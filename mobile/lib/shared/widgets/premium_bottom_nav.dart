@@ -133,11 +133,11 @@ class _CenterAddButton extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xff4f46e5), Color(0xff7c3aed)],
+            colors: [AppColors.stitchIndigo, AppColors.stitchPurple],
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xff4f46e5).withValues(alpha: 0.4),
+              color: AppColors.stitchIndigo.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),

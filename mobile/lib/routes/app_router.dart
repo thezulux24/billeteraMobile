@@ -13,6 +13,37 @@ import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/wallet/presentation/screens/account_details_screen.dart';
 import 'package:flutter/material.dart';
 
+// Premium fade and slight scale transition
+Page<dynamic> _buildPageWithTransition(
+  BuildContext context,
+  GoRouterState state,
+  Widget child,
+) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      // Fade in
+      final fadeAnimation = Tween<double>(
+        begin: 0.0,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+
+      // Slight scale up from 95% to 100%
+      final scaleAnimation = Tween<double>(
+        begin: 0.95,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
+
+      return FadeTransition(
+        opacity: fadeAnimation,
+        child: ScaleTransition(scale: scaleAnimation, child: child),
+      );
+    },
+  );
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authNotifierProvider);
 
@@ -32,18 +63,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
-      GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+      GoRoute(
+        path: '/home',
+        pageBuilder: (context, state) =>
+            _buildPageWithTransition(context, state, const HomeScreen()),
+      ),
       GoRoute(
         path: '/analytics',
-        builder: (context, state) => const AnalyticsScreen(),
+        pageBuilder: (context, state) =>
+            _buildPageWithTransition(context, state, const AnalyticsScreen()),
       ),
       GoRoute(
         path: '/wallet',
-        builder: (context, state) => const WalletAssetsScreen(),
+        pageBuilder: (context, state) => _buildPageWithTransition(
+          context,
+          state,
+          const WalletAssetsScreen(),
+        ),
       ),
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfileScreen(),
+        pageBuilder: (context, state) =>
+            _buildPageWithTransition(context, state, const ProfileScreen()),
       ),
       GoRoute(
         path: '/account-details',

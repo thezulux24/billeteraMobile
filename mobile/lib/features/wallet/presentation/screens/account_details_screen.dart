@@ -146,7 +146,9 @@ class AccountDetailsScreen extends ConsumerWidget {
               ),
 
               // Transaction List
-              SliverToBoxAdapter(
+              SliverFillRemaining(
+                hasScrollBody: false,
+                fillOverscroll: true,
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(

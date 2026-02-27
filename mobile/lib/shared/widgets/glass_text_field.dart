@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_tokens.dart';
 
 class GlassTextField extends StatelessWidget {
   const GlassTextField({
@@ -54,28 +53,19 @@ class GlassTextField extends StatelessWidget {
                   ? AppColors.glassDark
                   : Colors.black.withValues(alpha: 0.05)),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-          borderSide: BorderSide(
-            color: isPremium
-                ? AppColors.glassBorder(context)
-                : (isDark
-                      ? AppColors.glassBorderDark
-                      : Colors.black.withValues(alpha: 0.1)),
-          ),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-          borderSide: BorderSide(
-            color: isPremium
-                ? AppColors.glassBorder(context)
-                : (isDark
-                      ? AppColors.glassBorderDark
-                      : Colors.black.withValues(alpha: 0.1)),
-          ),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTokens.radiusMd),
-          borderSide: const BorderSide(color: AppColors.stitchIndigo),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(
+            color: AppColors.stitchIndigo,
+            width: 1.5,
+          ),
         ),
       ),
     );

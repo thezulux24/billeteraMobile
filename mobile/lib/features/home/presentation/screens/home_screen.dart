@@ -210,24 +210,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ...bankState.accounts.map(
                             (acc) => Padding(
                               padding: const EdgeInsets.only(right: 16),
-                              child: WalletCard(
-                                name: acc.name,
-                                balance: acc.balance,
-                                currency: acc.currency,
-                                type: WalletCardType.savings,
+                              child: GestureDetector(
+                                onTap: () => context.push(
+                                  '/account-details',
+                                  extra: {
+                                    'assetId': acc.id,
+                                    'assetName': acc.name,
+                                    'subtitle': acc.bankName,
+                                    'amount':
+                                        '\$${acc.balance.toStringAsFixed(2)}',
+                                    'accentColor': const Color(0xff4f46e5),
+                                  },
+                                ),
+                                child: WalletCard(
+                                  name: acc.name,
+                                  balance: acc.balance,
+                                  currency: acc.currency,
+                                  type: WalletCardType.savings,
+                                ),
                               ),
                             ),
                           ),
                           ...creditState.cards.map(
                             (card) => Padding(
                               padding: const EdgeInsets.only(right: 16),
-                              child: WalletCard(
-                                name: card.name,
-                                balance: card.currentDebt,
-                                currency: card.currency,
-                                type: WalletCardType.credit,
-                                tier: card.tier,
-                                lastFourDigit: card.lastFourDigits,
+                              child: GestureDetector(
+                                onTap: () => context.push(
+                                  '/account-details',
+                                  extra: {
+                                    'assetId': card.id,
+                                    'assetName': card.name,
+                                    'subtitle': '**** ${card.lastFourDigits}',
+                                    'amount':
+                                        '\$${card.currentDebt.toStringAsFixed(2)}',
+                                    'accentColor': const Color(0xff10b981),
+                                  },
+                                ),
+                                child: WalletCard(
+                                  name: card.name,
+                                  balance: card.currentDebt,
+                                  currency: card.currency,
+                                  type: WalletCardType.credit,
+                                  tier: card.tier,
+                                  lastFourDigit: card.lastFourDigits,
+                                ),
                               ),
                             ),
                           ),
