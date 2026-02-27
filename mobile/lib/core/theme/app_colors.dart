@@ -16,8 +16,12 @@ class AppColors {
   static const Color orbGold = Color(0xFFF2B24A);
   static const Color orbPink = Color(0xFFFF8BA7);
 
+  static const Color stitchIndigo = Color(0xFF4F46E5);
+  static const Color stitchPurple = Color(0xFF7C3AED);
+  static const Color stitchDarkBackground = Color(0xFF0F0E1C);
+
   static const Color glassLight = Color(0x7AFFFFFF);
-  static const Color glassDark = Color(0x29FFFFFF);
+  static const Color glassDark = Color(0x1AFFFFFF);
   static const Color glassBorderLight = Color(0xA6FFFFFF);
-  static const Color glassBorderDark = Color(0x4DFFFFFF);
+  static const Color glassBorderDark = Color(0x26FFFFFF);
 }

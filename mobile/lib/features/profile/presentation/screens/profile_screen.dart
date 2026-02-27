@@ -2,16 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_tokens.dart';
-import '../../../../shared/widgets/app_popup.dart';
-import '../../../../shared/widgets/app_top_bar.dart';
-import '../../../../shared/widgets/brand_banner.dart';
-import '../../../../shared/widgets/glass_button.dart';
-import '../../../../shared/widgets/glass_card.dart';
 import '../../../../shared/widgets/glass_scaffold.dart';
-import '../../../../shared/widgets/glass_text_field.dart';
+import '../../../../shared/widgets/premium_bottom_nav.dart';
 import '../../../auth/providers/auth_notifier.dart';
-import '../../providers/profile_notifier.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -21,252 +14,327 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _currencyController = TextEditingController();
-  bool _aiEnabled = true;
-  bool _initializedForm = false;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() => ref.read(profileNotifierProvider).load());
-  }
-
-  @override
-  void dispose() {
-    _currencyController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authNotifierProvider);
-    final profileState = ref.watch(profileNotifierProvider);
-    final profile = profileState.profile;
-
-    if (profile != null && !_initializedForm) {
-      _currencyController.text = profile.baseCurrency;
-      _aiEnabled = profile.aiEnabled;
-      _initializedForm = true;
-    }
+    final userEmail = auth.session?.email ?? 'Alex Sterling';
+    final userName = userEmail.split('@').first;
+    final capitalizedName = userName[0].toUpperCase() + userName.substring(1);
 
     return GlassScaffold(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final maxWidth = constraints.maxWidth > 740 ? 620.0 : 540.0;
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTokens.spaceLg),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: Form(
-                  key: _formKey,
+      isPremium: true,
+      child: Stack(
+        children: [
+          // Background content
+          Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 60,
+                  left: 24,
+                  right: 24,
+                  bottom: 16,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _IconBtn(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onPressed: () => context.go('/home'),
+                    ),
+                    const Text(
+                      'Profile',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    _IconBtn(icon: Icons.edit_outlined, onPressed: () {}),
+                  ],
+                ),
+              ),
+
+              // Scrollable area
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AppTopBar(
-                        title: 'Mi perfil',
-                        subtitle: 'Personaliza tu experiencia y preferencias.',
-                        actions: [
-                          AppTopBarAction(
-                            label: 'Inicio',
-                            icon: Icons.home_outlined,
-                            style: AppTopBarActionStyle.primary,
-                            onPressed: () => context.go('/home'),
+                      const SizedBox(height: 20),
+                      // Avatar Section
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.1),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.2),
+                              ),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Image.network(
+                                'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                          AppTopBarAction(
-                            label: 'Salir',
-                            icon: Icons.logout_rounded,
-                            style: AppTopBarActionStyle.danger,
-                            onPressed: auth.isBusy
-                                ? null
-                                : () async {
-                                    await ref
-                                        .read(authNotifierProvider)
-                                        .signOut();
-                                  },
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: const Color(0xff14b8a6),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: const Color(0xff0f0e17),
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.verified_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppTokens.spaceLg),
-                      GlassCard(
-                        padding: const EdgeInsets.all(AppTokens.spaceLg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const BrandBanner(
-                              title: 'Tu centro de configuracion',
-                              subtitle:
-                                  'Ajusta tu moneda principal y preferencias de IA para personalizar todo el flujo financiero.',
+                      const SizedBox(height: 16),
+                      Text(
+                        capitalizedName,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const Text(
+                        'Premium Member • Joined 2023',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xff94a3b8),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Settings Groups
+                      _SettingsGroup(
+                        items: [
+                          _SettingsItem(
+                            icon: Icons.person_outline_rounded,
+                            color: const Color(0xff14b8a6),
+                            title: 'Personal Information',
+                            onTap: () {},
+                          ),
+                          _SettingsItem(
+                            icon: Icons.notifications_active_outlined,
+                            color: const Color(0xffa855f7),
+                            title: 'Notifications',
+                            onTap: () {},
+                          ),
+                          _SettingsItem(
+                            icon: Icons.security_outlined,
+                            color: const Color(0xffec4899),
+                            title: 'Privacy & Security',
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _SettingsGroup(
+                        items: [
+                          _SettingsItem(
+                            icon: Icons.account_balance_wallet_outlined,
+                            color: const Color(0xff3b82f6),
+                            title: 'Payment Methods',
+                            onTap: () {},
+                          ),
+                          _SettingsItem(
+                            icon: Icons.help_outline_rounded,
+                            color: const Color(0xff14b8a6),
+                            title: 'Help & Support',
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Log Out Button
+                      GestureDetector(
+                        onTap: () async {
+                          await ref.read(authNotifierProvider).signOut();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xffec4899,
+                            ).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(
+                              color: const Color(
+                                0xffec4899,
+                              ).withValues(alpha: 0.3),
                             ),
-                            const SizedBox(height: AppTokens.spaceLg),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(AppTokens.spaceMd),
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surface.withValues(alpha: 0.45),
-                                borderRadius: BorderRadius.circular(
-                                  AppTokens.radiusMd,
-                                ),
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.3),
-                                ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.logout_rounded,
+                                color: Color(0xffec4899),
+                                size: 18,
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.verified_user_outlined,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                  const SizedBox(width: AppTokens.spaceSm),
-                                  Expanded(
-                                    child: Text(
-                                      auth.session?.email ?? '-',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: AppTokens.spaceMd),
-                            GlassTextField(
-                              controller: _currencyController,
-                              label: 'Moneda base (ISO)',
-                              textInputAction: TextInputAction.done,
-                              prefixIcon: Icons.attach_money_rounded,
-                              onFieldSubmitted: (_) => _save(),
-                              validator: (value) {
-                                if (value == null || value.trim().length != 3) {
-                                  return 'Usa codigo de 3 letras (ej. USD)';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppTokens.spaceSm),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppTokens.spaceSm,
-                                vertical: AppTokens.spaceXs,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.surface.withValues(alpha: 0.4),
-                                borderRadius: BorderRadius.circular(
-                                  AppTokens.radiusMd,
-                                ),
-                                border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.28),
-                                ),
-                              ),
-                              child: SwitchListTile.adaptive(
-                                contentPadding: EdgeInsets.zero,
-                                value: _aiEnabled,
-                                onChanged: (value) =>
-                                    setState(() => _aiEnabled = value),
-                                title: const Text('Asistente IA habilitado'),
-                                subtitle: const Text(
-                                  'Recomendaciones y analisis contextual',
-                                ),
-                              ),
-                            ),
-                            if (profileState.error != null) ...[
-                              const SizedBox(height: AppTokens.spaceMd),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: AppTokens.spaceSm,
-                                  vertical: AppTokens.spaceXs,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .errorContainer
-                                      .withValues(alpha: 0.75),
-                                  borderRadius: BorderRadius.circular(
-                                    AppTokens.radiusSm,
-                                  ),
-                                ),
-                                child: Text(
-                                  profileState.error!,
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Log Out',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xffec4899),
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                             ],
-                            const SizedBox(height: AppTokens.spaceMd),
-                            if (profileState.isLoading && profile == null)
-                              const Center(child: CircularProgressIndicator())
-                            else
-                              GlassButton(
-                                label: 'Guardar cambios',
-                                icon: Icons.save_outlined,
-                                loading: profileState.isSaving,
-                                onPressed: _save,
-                              ),
-                          ],
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
               ),
+            ],
+          ),
+
+          // Bottom Nav
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: PremiumBottomNav(
+              currentIndex: 3, // Settings/Profile
+              onTabSelected: (index) {
+                if (index == 0) context.go('/home');
+                if (index == 1) context.go('/analytics');
+                if (index == 2) context.go('/wallet');
+              },
+              onAddPressed: () {},
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
+}
 
-  Future<void> _save() async {
-    final notifier = ref.read(profileNotifierProvider);
-    if (notifier.isSaving) {
-      return;
-    }
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      showAppPopup(
-        context,
-        message: 'Revisa la moneda base antes de guardar.',
-        type: AppPopupType.error,
-      );
-      return;
-    }
+class _IconBtn extends StatelessWidget {
+  const _IconBtn({required this.icon, required this.onPressed});
+  final IconData icon;
+  final VoidCallback onPressed;
 
-    final nextCurrency = _currencyController.text.trim().toUpperCase();
-    final currentProfile = notifier.profile;
-    if (currentProfile != null &&
-        currentProfile.baseCurrency.toUpperCase() == nextCurrency &&
-        currentProfile.aiEnabled == _aiEnabled) {
-      showAppPopup(
-        context,
-        message: 'No hay cambios para guardar.',
-        type: AppPopupType.info,
-      );
-      return;
-    }
-
-    await notifier.save(baseCurrency: nextCurrency, aiEnabled: _aiEnabled);
-    if (!mounted) {
-      return;
-    }
-
-    if (notifier.error != null) {
-      showAppPopup(context, message: notifier.error!, type: AppPopupType.error);
-      return;
-    }
-
-    showAppPopup(
-      context,
-      message: 'Perfil actualizado correctamente.',
-      type: AppPopupType.success,
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.03),
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Icon(icon, color: const Color(0xffcbd5e1), size: 20),
+      ),
     );
-    context.go('/home');
+  }
+}
+
+class _SettingsGroup extends StatelessWidget {
+  const _SettingsGroup({required this.items});
+  final List<Widget> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: Column(children: items),
+    );
+  }
+}
+
+class _SettingsItem extends StatelessWidget {
+  const _SettingsItem({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Color(0xff64748b),
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

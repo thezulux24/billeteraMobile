@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Premium Finance Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121022",
+                        "glass-border": "rgba(255, 255, 255, 0.1)",
+                        "glass-bg": "rgba(255, 255, 255, 0.03)",
+                        "glass-highlight": "rgba(255, 255, 255, 0.08)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Glass gradient background */
+        .bg-gradient-mesh {
+            background: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                        radial-gradient(at 50% 0%, hsla(245,95%,30%,0.2) 0, transparent 50%), 
+                        radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen relative overflow-hidden">
+<!-- Background Decoration -->
+<div class="fixed inset-0 z-0 bg-background-light dark:bg-background-dark">
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] opacity-40"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[100px] opacity-30"></div>
+</div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col h-full min-h-screen pb-20">
+<!-- Header -->
+<header class="flex items-center justify-between px-6 pt-12 pb-6">
+<div class="flex items-center gap-4">
+<div class="h-10 w-10 rounded-full overflow-hidden ring-2 ring-white/10 p-0.5" data-alt="User profile picture placeholder">
+<img alt="User Profile" class="h-full w-full rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd2LvR87zPtHuu4jJbu3qq7YZxkQmkCvgw1NkRAEyoV7ZKW2-KnQ3g1KcwUFyKyPPJTWYZuo77B9ik648jGbMu-r3sokra3VdrkB5-aY0-HyC1DawwPS5fItKt0YLy-aOHfK1pH2wtf2_ysGA7T1A-yDKq6MlmDROHP8amXsVGiFl3HzGx5HeEn9e_bN9qMVo1k0EC-hxsN4te5qcLdP7M1cSozmgJHVe_E_imNOzbTfzn_pQSzBJi85QN9HvJZ754AtLGn4jstr0"/>
+</div>
+<div>
+<p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Welcome back</p>
+<h1 class="text-lg font-bold text-slate-100">Alexandra</h1>
+</div>
+</div>
+<button class="relative h-10 w-10 flex items-center justify-center rounded-full bg-glass-bg border border-glass-border backdrop-blur-md text-slate-300 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 border border-[#121022]"></span>
+</button>
+</header>
+<!-- Main Content Scroll Area -->
+<div class="flex-1 overflow-y-auto scrollbar-hide px-6 space-y-8 pb-4">
+<!-- Glass Card: Net Worth Summary -->
+<section class="relative overflow-hidden rounded-3xl p-6 border border-glass-border bg-glass-bg/40 backdrop-blur-xl shadow-xl shadow-black/20">
+<!-- Subtle inner shine -->
+<div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/5 to-transparent pointer-events-none"></div>
+<div class="relative z-10 flex flex-col gap-6">
+<div>
+<p class="text-sm text-slate-400 font-medium mb-1">Total Net Balance</p>
+<div class="flex items-baseline gap-2">
+<h2 class="text-4xl font-bold text-white tracking-tight">$142,590.00</h2>
+<div class="flex items-center gap-1 text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-500/20">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                2.4%
+                            </div>
+</div>
+</div>
+<div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+<div class="flex gap-4">
+<div class="flex-1">
+<p class="text-xs text-slate-400 mb-1">Total Assets</p>
+<p class="text-lg font-semibold text-slate-200">$156,200</p>
+<p class="text-xs text-emerald-400 mt-1">+5.1%</p>
+</div>
+<div class="w-px bg-white/10"></div>
+<div class="flex-1">
+<p class="text-xs text-slate-400 mb-1">Credit Debt</p>
+<p class="text-lg font-semibold text-slate-200">$13,610</p>
+<p class="text-xs text-orange-400 mt-1">-1.2%</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Accounts & Cards Horizontal Scroll -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-slate-100">My Wallets</h3>
+<button class="text-sm text-primary dark:text-indigo-400 font-medium hover:text-indigo-300 transition-colors">See All</button>
+</div>
+<div class="flex overflow-x-auto scrollbar-hide gap-4 -mx-6 px-6 pb-2">
+<!-- Card 1: Main Checking -->
+<div class="min-w-[260px] h-[160px] rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden group">
+<!-- Card background -->
+<div class="absolute inset-0 bg-gradient-to-br from-[#2c2a4a] to-[#1a182e] border border-glass-border"></div>
+<!-- Abstract pattern -->
+<div class="absolute right-[-20%] top-[-20%] w-[150px] h-[150px] rounded-full bg-indigo-500/20 blur-2xl"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="p-2 bg-white/5 rounded-lg border border-white/5 backdrop-blur-sm">
+<span class="material-symbols-outlined text-white text-[24px]">account_balance</span>
+</div>
+<span class="text-xs font-bold text-slate-400 tracking-widest uppercase">VISA</span>
+</div>
+<div class="relative z-10">
+<p class="text-slate-400 text-sm mb-1">Main Checking</p>
+<p class="text-2xl font-bold text-white tracking-wide">**** 4250</p>
+</div>
+</div>
+<!-- Card 2: Premium Black -->
+<div class="min-w-[260px] h-[160px] rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-black to-slate-900 border border-slate-700"></div>
+<div class="absolute right-0 bottom-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="p-2 bg-white/10 rounded-lg border border-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-white text-[24px]">diamond</span>
+</div>
+<span class="text-xs font-bold text-slate-400 tracking-widest uppercase">AMEX</span>
+</div>
+<div class="relative z-10">
+<p class="text-slate-400 text-sm mb-1">Platinum Card</p>
+<p class="text-2xl font-bold text-white tracking-wide">**** 1240</p>
+</div>
+</div>
+<!-- Card 3: Savings -->
+<div class="min-w-[260px] h-[160px] rounded-2xl p-5 relative flex flex-col justify-between overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-700 border border-white/10"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="p-2 bg-white/20 rounded-lg border border-white/10 backdrop-blur-sm">
+<span class="material-symbols-outlined text-white text-[24px]">savings</span>
+</div>
+</div>
+<div class="relative z-10">
+<p class="text-indigo-100 text-sm mb-1">High Yield Savings</p>
+<p class="text-2xl font-bold text-white tracking-wide">$56,000</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Monthly Overview (Bar Chart) -->
+<section>
+<h3 class="text-lg font-bold text-slate-100 mb-4">Monthly Overview</h3>
+<div class="relative w-full h-64 rounded-3xl bg-glass-bg border border-glass-border backdrop-blur-md p-6 flex flex-col justify-between">
+<div class="flex justify-between items-center mb-4">
+<div class="flex gap-4 text-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+<span class="text-slate-400">Income</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-white/20"></span>
+<span class="text-slate-400">Expense</span>
+</div>
+</div>
+<div class="bg-white/5 px-3 py-1 rounded-full border border-white/5 text-xs text-slate-300 backdrop-blur-sm">
+                            Oct 2023
+                        </div>
+</div>
+<!-- CSS Bar Chart Representation -->
+<div class="flex items-end justify-between h-full w-full gap-2 pt-2">
+<!-- Bar Group 1 -->
+<div class="flex flex-col items-center gap-2 w-full h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[12px] h-[40%] bg-indigo-500/40 rounded-t-sm group-hover:bg-indigo-500 transition-colors duration-300 relative">
+<div class="absolute bottom-0 left-0 w-full h-[60%] bg-indigo-500 rounded-t-sm"></div>
+</div>
+<div class="w-full max-w-[12px] h-[30%] bg-white/10 rounded-t-sm group-hover:bg-white/30 transition-colors duration-300"></div>
+<span class="text-[10px] text-slate-500">W1</span>
+</div>
+<!-- Bar Group 2 -->
+<div class="flex flex-col items-center gap-2 w-full h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[12px] h-[65%] bg-indigo-500/40 rounded-t-sm group-hover:bg-indigo-500 transition-colors duration-300 relative">
+<div class="absolute bottom-0 left-0 w-full h-[70%] bg-indigo-500 rounded-t-sm"></div>
+</div>
+<div class="w-full max-w-[12px] h-[45%] bg-white/10 rounded-t-sm group-hover:bg-white/30 transition-colors duration-300"></div>
+<span class="text-[10px] text-slate-500">W2</span>
+</div>
+<!-- Bar Group 3 -->
+<div class="flex flex-col items-center gap-2 w-full h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[12px] h-[50%] bg-indigo-500/40 rounded-t-sm group-hover:bg-indigo-500 transition-colors duration-300 relative">
+<div class="absolute bottom-0 left-0 w-full h-[50%] bg-indigo-500 rounded-t-sm"></div>
+</div>
+<div class="w-full max-w-[12px] h-[75%] bg-white/10 rounded-t-sm group-hover:bg-white/30 transition-colors duration-300"></div>
+<span class="text-[10px] text-slate-500">W3</span>
+</div>
+<!-- Bar Group 4 -->
+<div class="flex flex-col items-center gap-2 w-full h-full justify-end group cursor-pointer">
+<div class="w-full max-w-[12px] h-[80%] bg-indigo-500/40 rounded-t-sm group-hover:bg-indigo-500 transition-colors duration-300 relative">
+<div class="absolute bottom-0 left-0 w-full h-[85%] bg-indigo-500 rounded-t-sm"></div>
+</div>
+<div class="w-full max-w-[12px] h-[40%] bg-white/10 rounded-t-sm group-hover:bg-white/30 transition-colors duration-300"></div>
+<span class="text-[10px] text-slate-500">W4</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Insights (AI Powered) -->
+<section>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-indigo-400 text-[20px]">auto_awesome</span>
+<h3 class="text-lg font-bold text-slate-100">Quick Insights</h3>
+</div>
+<div class="p-[1px] rounded-2xl bg-gradient-to-r from-indigo-500/50 via-purple-500/50 to-transparent">
+<div class="bg-[#1a182e] rounded-2xl p-4 flex items-start gap-4 backdrop-blur-md relative overflow-hidden">
+<!-- Decorative glow -->
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-indigo-500/10 to-transparent pointer-events-none"></div>
+<div class="min-w-[40px] h-[40px] rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
+<span class="material-symbols-outlined text-[20px]">coffee</span>
+</div>
+<div class="flex-1 relative z-10">
+<p class="text-sm text-slate-200 leading-relaxed">
+                                You spent <span class="font-bold text-orange-400">15% more</span> on Coffee &amp; Dining this week compared to last week.
+                            </p>
+<button class="mt-3 text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                                View Transactions <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Navigation -->
+<nav class="absolute bottom-0 left-0 w-full bg-[#1b1933]/90 backdrop-blur-xl border-t border-[#262348] px-4 pb-6 pt-2 z-50">
+<div class="flex justify-between items-end">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary dark:text-indigo-400" href="#">
+<span class="material-symbols-outlined text-[24px] filled">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9692c9] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">pie_chart</span>
+<span class="text-[10px] font-medium">Analytics</span>
+</a>
+<!-- Center FAB -->
+<div class="flex flex-1 flex-col items-center justify-end relative bottom-4">
+<button class="h-14 w-14 rounded-full bg-primary hover:bg-indigo-600 flex items-center justify-center shadow-lg shadow-primary/40 transition-transform active:scale-95 text-white border-4 border-[#1b1933]">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9692c9] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Wallet</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#9692c9] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liquid Glass Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2513ec",
+                        "background-dark": "#0f0e17",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .liquid-glass-blur {
+                backdrop-filter: blur(16px);
+                background: rgba(255, 255, 255, 0.03);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+            }
+            .glowing-orb-purple {
+                background: radial-gradient(circle at center, rgba(147, 51, 234, 0.3) 0%, rgba(15, 14, 23, 0) 70%);
+            }
+            .glowing-orb-teal {
+                background: radial-gradient(circle at center, rgba(20, 184, 166, 0.25) 0%, rgba(15, 14, 23, 0) 70%);
+            }
+            .glass-track {
+                background: rgba(255, 255, 255, 0.05);
+                backdrop-filter: blur(4px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0f0e17] font-display selection:bg-primary/30 overflow-hidden">
+<div class="relative flex h-screen w-full flex-col bg-[#0f0e17] overflow-hidden items-center justify-center">
+<div class="absolute -top-20 -left-20 w-[120%] h-[80%] glowing-orb-purple pointer-events-none opacity-80"></div>
+<div class="absolute -bottom-20 -right-20 w-[120%] h-[80%] glowing-orb-teal pointer-events-none opacity-80"></div>
+<div class="z-10 flex flex-col items-center w-full max-w-sm px-10 h-full justify-between py-20">
+<div class="flex-1"></div>
+<div class="relative mb-32">
+<div class="w-24 h-24 rotate-45 liquid-glass-blur rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+<div class="w-10 h-10 rounded-full bg-cyan-400 blur-xl opacity-40 absolute"></div>
+<div class="absolute inset-0 flex items-center justify-center -rotate-45">
+<span class="material-symbols-outlined text-4xl text-white font-thin" style="font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 48;">diamond</span>
+</div>
+</div>
+<div class="absolute -inset-10 bg-cyan-500/10 blur-[80px] rounded-full -z-10"></div>
+</div>
+<div class="w-full flex flex-col gap-8 items-center flex-1 justify-end">
+<div class="relative h-[2px] w-full max-w-[240px] glass-track overflow-hidden rounded-full">
+<div class="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-indigo-600 via-indigo-400 to-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.6)]" style="width: 45%;">
+</div>
+</div>
+<div class="flex flex-col items-center">
+<p class="text-slate-400 text-[13px] font-light tracking-wide text-center">
+                        Securely loading your finances...
+                    </p>
+</div>
+</div>
+</div>
+<div class="absolute bottom-2 w-32 h-1 bg-white/10 rounded-full"></div>
+<div class="absolute inset-0 pointer-events-none opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+</div>
+<div class="hidden">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#121122] dark group/design-root overflow-x-hidden">
+<div class="@container">
+<div class="@[480px]:px-4 @[480px]:py-3">
+<div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-[#121122] @[480px]:rounded-lg min-h-80" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIxRL82WYpF3K1NxlN4PN-VL1PZUytpY-FnvDsHlFFIOKmUaRb03bER-IxNC4p9sr_YO63M8Ml7qiwl9kYP4D1YL5gFVZiNVCcBKq0AxIJAht_ZRs8aC6pK5KZ8cdZOEAqimP9X9kZCS0aI-8hGU4DDteoxpLmnJeXtHDUOIxJTFlxPFMd0rxDHX4M48_gWDwn9mr4xNOrF3K-daA5CpNvHcM-MtsdLm4mhY7mYnGcQxbG28qIKDi3PkC0HSKyz7RlOKbbqdovF2M");'>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

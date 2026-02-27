@@ -8,38 +8,65 @@ class GlassScaffold extends StatelessWidget {
     required this.child,
     this.appBar,
     this.showOrbs = true,
+    this.isPremium = false,
   });
 
   final Widget child;
   final PreferredSizeWidget? appBar;
   final bool showOrbs;
+  final bool isPremium;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // If it's the premium design, we always want the dark aesthetic from the reference
+    final effectiveIsDark =
+        isPremium || Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isPremium
+        ? AppColors.stitchDarkBackground
+        : (effectiveIsDark ? Colors.black : Colors.white);
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       appBar: appBar,
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? const [
-                    AppColors.darkBackgroundTop,
-                    AppColors.darkBackgroundBottom,
-                  ]
-                : const [
-                    AppColors.lightBackgroundTop,
-                    AppColors.lightBackgroundBottom,
-                  ],
-          ),
+          color: backgroundColor,
+          gradient: isPremium
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: effectiveIsDark
+                      ? const [
+                          AppColors.darkBackgroundTop,
+                          AppColors.darkBackgroundBottom,
+                        ]
+                      : const [
+                          AppColors.lightBackgroundTop,
+                          AppColors.lightBackgroundBottom,
+                        ],
+                ),
         ),
         child: Stack(
           children: [
-            if (showOrbs) ..._buildOrbs(isDark),
-            SafeArea(child: child),
+            if (showOrbs) ..._buildOrbs(effectiveIsDark),
+            SafeArea(
+              child: isPremium
+                  ? Theme(
+                      data: ThemeData(
+                        brightness: Brightness.dark,
+                        scaffoldBackgroundColor: Colors.transparent,
+                        textTheme: ThemeData.dark().textTheme.apply(
+                          bodyColor: Colors.white,
+                          displayColor: Colors.white,
+                        ),
+                      ),
+                      child: child,
+                    )
+                  : child,
+            ),
           ],
         ),
       ),
@@ -47,6 +74,38 @@ class GlassScaffold extends StatelessWidget {
   }
 
   List<Widget> _buildOrbs(bool isDark) {
+    if (isPremium) {
+      return [
+        // Top Left Indigo mesh
+        _decorativeOrb(
+          top: -100,
+          left: -100,
+          size: 500,
+          color: const Color(0xff4F46E5),
+          alpha: 0.15,
+          blurRadius: 150,
+        ),
+        // Top Center Blue mesh
+        _decorativeOrb(
+          top: -50,
+          left: 100,
+          size: 400,
+          color: const Color(0xff2513ec),
+          alpha: 0.1,
+          blurRadius: 120,
+        ),
+        // Bottom Right Pink/Purple mesh
+        _decorativeOrb(
+          bottom: -100,
+          right: -100,
+          size: 450,
+          color: const Color(0xffec4899),
+          alpha: 0.12,
+          blurRadius: 140,
+        ),
+      ];
+    }
+
     final topColor = isDark
         ? AppColors.orbBlue.withValues(alpha: 0.18)
         : AppColors.orbBlue.withValues(alpha: 0.26);
@@ -58,24 +117,9 @@ class GlassScaffold extends StatelessWidget {
         : AppColors.orbPink.withValues(alpha: 0.14);
 
     return [
-      _decorativeOrb(
-        top: -70,
-        left: -50,
-        size: 220,
-        color: topColor,
-      ),
-      _decorativeOrb(
-        top: 120,
-        right: -90,
-        size: 260,
-        color: rightColor,
-      ),
-      _decorativeOrb(
-        bottom: -120,
-        left: 40,
-        size: 240,
-        color: bottomColor,
-      ),
+      _decorativeOrb(top: -70, left: -50, size: 220, color: topColor),
+      _decorativeOrb(top: 120, right: -90, size: 260, color: rightColor),
+      _decorativeOrb(bottom: -120, left: 40, size: 240, color: bottomColor),
     ];
   }
 
@@ -86,23 +130,42 @@ class GlassScaffold extends StatelessWidget {
     double? bottom,
     required double size,
     required Color color,
+    double? alpha,
+    double? blurRadius,
   }) {
+    final orbColor = alpha != null ? color.withValues(alpha: alpha) : color;
     return Positioned(
       top: top,
       left: left,
       right: right,
       bottom: bottom,
       child: IgnorePointer(
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [color, color.withValues(alpha: 0)],
-            ),
-          ),
-        ),
+        child: blurRadius != null
+            ? Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: orbColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: orbColor,
+                      blurRadius: blurRadius,
+                      spreadRadius: blurRadius / 2,
+                    ),
+                  ],
+                ),
+              )
+            : Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [orbColor, orbColor.withValues(alpha: 0)],
+                  ),
+                ),
+              ),
       ),
     );
   }

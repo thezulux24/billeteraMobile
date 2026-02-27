@@ -4,11 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_tokens.dart';
 import '../../../../shared/widgets/app_popup.dart';
-import '../../../../shared/widgets/brand_banner.dart';
 import '../../../../shared/widgets/glass_button.dart';
-import '../../../../shared/widgets/glass_card.dart';
 import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/glass_text_field.dart';
+import '../../../../shared/widgets/premium_brand_icon.dart';
+import '../../../../shared/widgets/social_login_button.dart';
 import '../../providers/auth_notifier.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -104,6 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final auth = ref.watch(authNotifierProvider);
 
     return GlassScaffold(
+      isPremium: true,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final maxWidth = constraints.maxWidth > 640 ? 520.0 : 460.0;
@@ -120,145 +121,144 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   curve: Curves.easeOutCubic,
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: maxWidth),
-                    child: GlassCard(
-                      padding: const EdgeInsets.all(AppTokens.spaceLg),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Center(child: PremiumBrandIcon()),
+                        const SizedBox(height: AppTokens.spaceLg),
+                        const Text(
+                          'Welcome Back',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: AppTokens.spaceXs),
+                        const Text(
+                          'Continue your premium financial journey',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14, color: Colors.white60),
+                        ),
+                        const SizedBox(height: AppTokens.spaceLg * 1.5),
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              GlassTextField(
+                                controller: _emailController,
+                                label: 'Email Address',
+                                isPremium: true,
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                              ),
+                              const SizedBox(height: AppTokens.spaceMd),
+                              GlassTextField(
+                                controller: _passwordController,
+                                label: 'Password',
+                                isPremium: true,
+                                obscureText: true,
+                                textInputAction: TextInputAction.done,
+                                onFieldSubmitted: (_) => _submit(auth),
+                              ),
+                              const SizedBox(height: AppTokens.spaceSm),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () =>
+                                      context.push('/forgot-password'),
+                                  child: const Text(
+                                    'Forgot password?',
+                                    style: TextStyle(
+                                      color: Colors.white38,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: AppTokens.spaceMd),
+                              GlassButton(
+                                isPremium: true,
+                                label: 'Log In',
+                                loading: auth.isBusy,
+                                onPressed: () => _submit(auth),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppTokens.spaceLg),
+                        Row(
                           children: [
-                            const BrandBanner(
-                              title: 'Control real de tu dinero',
-                              subtitle:
-                                  'Inicia sesion para ver cuentas, presupuesto y metas en un solo flujo.',
-                            ),
-                            const SizedBox(height: AppTokens.spaceLg),
-                            GlassTextField(
-                              controller: _emailController,
-                              label: 'Correo electronico',
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              prefixIcon: Icons.mail_outline_rounded,
-                              validator: (value) {
-                                final email = (value ?? '').trim();
-                                if (email.isEmpty) {
-                                  return 'Ingresa tu email';
-                                }
-                                if (!_emailRegex.hasMatch(email)) {
-                                  return 'Correo invalido';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppTokens.spaceMd),
-                            GlassTextField(
-                              controller: _passwordController,
-                              label: 'Contrasena',
-                              obscureText: true,
-                              textInputAction: TextInputAction.done,
-                              prefixIcon: Icons.lock_outline_rounded,
-                              onFieldSubmitted: (_) => _submit(auth),
-                              validator: (value) {
-                                final password = value ?? '';
-                                if (password.length < 8) {
-                                  return 'Minimo 8 caracteres';
-                                }
-                                final hasUpper = RegExp(
-                                  r'[A-Z]',
-                                ).hasMatch(password);
-                                final hasLower = RegExp(
-                                  r'[a-z]',
-                                ).hasMatch(password);
-                                final hasNumber = RegExp(
-                                  r'\d',
-                                ).hasMatch(password);
-                                if (!hasUpper || !hasLower || !hasNumber) {
-                                  return 'Incluye mayuscula, minuscula y numero';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppTokens.spaceSm),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () =>
-                                    context.push('/forgot-password'),
-                                child: const Text('Olvide mi contrasena'),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.white.withValues(alpha: 0.1),
                               ),
                             ),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 320),
-                              switchInCurve: Curves.easeOutCubic,
-                              switchOutCurve: Curves.easeInCubic,
-                              child: auth.error == null
-                                  ? const SizedBox(
-                                      key: ValueKey('no-login-error'),
-                                      height: AppTokens.spaceXs,
-                                    )
-                                  : Container(
-                                      key: ValueKey(auth.error),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: AppTokens.spaceSm,
-                                        vertical: AppTokens.spaceXs,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .errorContainer
-                                            .withValues(alpha: 0.75),
-                                        borderRadius: BorderRadius.circular(
-                                          AppTokens.radiusSm,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.error_outline_rounded,
-                                            size: 18,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.error,
-                                          ),
-                                          const SizedBox(
-                                            width: AppTokens.spaceXs,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              auth.error!,
-                                              style: TextStyle(
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.error,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                            ),
-                            const SizedBox(height: AppTokens.spaceMd),
-                            GlassButton(
-                              label: 'Entrar a mi cuenta',
-                              icon: Icons.arrow_forward_rounded,
-                              loading: auth.isBusy,
-                              onPressed: () => _submit(auth),
-                            ),
-                            const SizedBox(height: AppTokens.spaceSm),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('Nuevo en billeteraMobile?'),
-                                TextButton(
-                                  onPressed: () => context.push('/register'),
-                                  child: const Text('Crear cuenta'),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: Text(
+                                'Or continue with',
+                                style: TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 12,
                                 ),
-                              ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Divider(
+                                color: Colors.white.withValues(alpha: 0.1),
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: AppTokens.spaceLg),
+                        Row(
+                          children: [
+                            SocialLoginButton(
+                              icon: const Icon(
+                                Icons.g_mobiledata,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                              label: 'Google',
+                              onPressed: () {},
+                            ),
+                            const SizedBox(width: AppTokens.spaceMd),
+                            SocialLoginButton(
+                              icon: const Icon(
+                                Icons.apple,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              label: 'Apple',
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppTokens.spaceLg),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'New to WealthFlow?',
+                              style: TextStyle(color: Colors.white60),
+                            ),
+                            TextButton(
+                              onPressed: () => context.push('/register'),
+                              child: const Text(
+                                'Create account',
+                                style: TextStyle(
+                                  color: Color(0xFFA5B4FC),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),

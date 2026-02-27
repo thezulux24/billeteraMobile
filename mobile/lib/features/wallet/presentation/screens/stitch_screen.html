@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Liquid Glass Wallet Assets</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06b6d4",
+                        "neon-primary": "#06b6d4",
+                        "neon-teal": "#14b8a6",
+                        "neon-pink": "#ec4899",
+                        "charcoal": "#0a0a0f"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer components {
+            .glass-panel {
+                @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+            }
+            .glass-panel-selected {
+                @apply relative overflow-hidden;
+                background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+                border: 1px solid transparent;
+                background-clip: padding-box;
+            }
+            .conic-border {
+                position: relative;
+                padding: 1px;
+                border-radius: 1.5rem;
+                background: conic-gradient(from 0deg, #06b6d4, #ec4899, #14b8a6, #06b6d4);
+            }
+            .radial-glow {
+                position: absolute;
+                width: 150%;
+                height: 150%;
+                background: radial-gradient(circle at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+                top: -25%;
+                left: -25%;
+                z-index: 0;
+                pointer-events: none;
+            }
+            .nav-glass {
+                @apply bg-black/40 backdrop-blur-2xl border-t border-white/10;
+            }
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-charcoal text-slate-100 font-display min-h-screen relative overflow-hidden">
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] right-[-10%] w-[450px] h-[450px] bg-teal-500/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[20%] left-[-15%] w-[400px] h-[400px] bg-pink-500/20 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] right-[10%] w-[350px] h-[350px] bg-primary/20 rounded-full blur-[110px]"></div>
+</div>
+<div class="relative z-10 flex flex-col h-screen">
+<header class="flex items-center justify-between px-6 pt-12 pb-4">
+<div>
+<h1 class="text-2xl font-bold tracking-tight">Wallet</h1>
+<p class="text-slate-400 text-xs mt-0.5">Manage your digital assets</p>
+</div>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+<button class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto scrollbar-hide px-6 pt-2 pb-32 space-y-6">
+<div class="relative p-6 rounded-3xl glass-panel overflow-hidden">
+<div class="radial-glow"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-4">
+<span class="text-slate-400 text-sm font-medium">Total Net Worth</span>
+<span class="text-green-400 text-xs font-bold bg-green-400/10 px-2 py-1 rounded-full">+4.2%</span>
+</div>
+<h2 class="text-4xl font-bold text-white mb-6">$124,582.00</h2>
+<div class="flex gap-4">
+<button class="flex-1 py-3 rounded-2xl bg-white/10 border border-white/10 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/15 transition-all">
+<span class="material-symbols-outlined text-[18px]">add_circle</span> Deposit
+                        </button>
+<button class="flex-1 py-3 rounded-2xl bg-white/10 border border-white/10 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/15 transition-all">
+<span class="material-symbols-outlined text-[18px]">send</span> Send
+                        </button>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between px-1">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">My Accounts</h3>
+<button class="text-xs font-bold text-primary">See All</button>
+</div>
+<div class="conic-border">
+<div class="glass-panel-selected rounded-[1.4rem] p-5">
+<div class="radial-glow !opacity-40"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-neon-teal flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[24px] filled">account_balance</span>
+</div>
+<div>
+<p class="text-white font-bold text-sm">Main Savings</p>
+<p class="text-slate-400 text-[11px]">**** 4829</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</div>
+<div class="flex justify-between items-end">
+<p class="text-2xl font-bold text-white">$42,390.45</p>
+<img alt="Card Logo" class="h-6 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5BPMNNGuqZfPzmmYXquJ8a2khHWMLwlOG2NResPbv7qmliz2AtCXEzQ0WL2YcvZ5ljAeH0W1_kcCdj1LFxsNs7jbB2OsRrNLAV9ul8g5k5EgiD0xeIXHHXHRdrL0xQUWoBM2fLBUBDi8Vs-hFOlxGaeohU35dL6ONLo87Z6peo3WyuzMqWaMrnbJF5kQL5N2_CSL35LHJVfi42Nl1f7CR1Lv1DfxBWqsan6OzXvF6zGsaZij7_oN6CGyqZVVC9VcloVeiamPlhAQ"/>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-3xl p-5 relative overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[24px]">currency_bitcoin</span>
+</div>
+<div>
+<p class="text-white font-bold text-sm">Crypto Portfolio</p>
+<p class="text-slate-400 text-[11px]">Active Wallet</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</div>
+<div class="flex justify-between items-end">
+<p class="text-2xl font-bold text-white">$12,842.10</p>
+<div class="text-right">
+<p class="text-[10px] text-slate-400 font-medium">0.428 BTC</p>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-3xl p-5 relative overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-slate-300">
+<span class="material-symbols-outlined text-[24px]">credit_card</span>
+</div>
+<div>
+<p class="text-white font-bold text-sm">Apple Card</p>
+<p class="text-slate-400 text-[11px]">**** 9102</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400">more_vert</span>
+</div>
+<div class="flex justify-between items-end">
+<p class="text-2xl font-bold text-white">$2,105.00</p>
+<p class="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">Platinum</p>
+</div>
+</div>
+</div>
+<section class="space-y-4">
+<h3 class="text-sm font-bold uppercase tracking-widest text-slate-500 px-1">Recent Assets</h3>
+<div class="glass-panel rounded-3xl divide-y divide-white/5">
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+<span class="material-symbols-outlined text-[20px]">stock_media</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Stock Market</p>
+<p class="text-[11px] text-slate-400">Portfolio Growth</p>
+</div>
+</div>
+<p class="text-sm font-bold text-green-400">+$1,240</p>
+</div>
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+<span class="material-symbols-outlined text-[20px]">real_estate_agent</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white">Real Estate</p>
+<p class="text-[11px] text-slate-400">Monthly Rent</p>
+</div>
+</div>
+<p class="text-sm font-bold text-white">$67,205</p>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 w-full nav-glass px-6 pb-8 pt-3 z-50">
+<div class="flex justify-between items-center max-w-md mx-auto relative">
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">home</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">pie_chart</span>
+<span class="text-[10px] font-medium">Stats</span>
+</a>
+<div class="relative -top-10">
+<div class="absolute inset-0 bg-neon-primary/40 blur-xl rounded-full scale-125"></div>
+<button class="relative w-14 h-14 rounded-full bg-gradient-to-tr from-neon-primary to-neon-teal shadow-[0_0_20px_rgba(6,182,212,0.5)] border-4 border-charcoal flex items-center justify-center text-white active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[32px] font-bold">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-neon-primary" href="#">
+<span class="material-symbols-outlined text-[26px] filled">account_balance_wallet</span>
+<span class="text-[10px] font-medium">Wallet</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[26px]">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>
