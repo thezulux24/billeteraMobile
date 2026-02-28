@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile/shared/widgets/glass_scaffold.dart';
 import 'package:mobile/shared/widgets/asset_summary_card.dart';
 import 'package:mobile/shared/widgets/premium_bottom_nav.dart';
+import 'package:mobile/shared/widgets/wallet_style_header.dart';
 import 'package:mobile/core/theme/app_colors.dart';
 import 'package:mobile/shared/widgets/add_account_bottom_sheet.dart';
 import 'package:mobile/shared/widgets/add_transaction_bottom_sheet.dart';
@@ -37,46 +38,42 @@ class WalletAssetsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 // Header
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 60,
-                    left: 24,
-                    right: 24,
-                    bottom: 16,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                WalletStyleHeader(
+                  leading: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Wallet',
-                            style: GoogleFonts.manrope(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: onSurface,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const Text(
-                            'Manage your digital assets',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xff94a3b8),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Wallet',
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.manrope(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: onSurface,
+                          letterSpacing: -0.5,
+                        ),
                       ),
-                      Row(
-                        children: const [
-                          _HeaderBtn(icon: Icons.search_rounded),
-                          SizedBox(width: 12),
-                          _HeaderBtn(icon: Icons.notifications_none_rounded),
-                        ],
+                      const Text(
+                        'Manage your digital assets',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xff94a3b8),
+                        ),
                       ),
                     ],
                   ),
+                  actions: [
+                    WalletHeaderActionButton(
+                      icon: Icons.search_rounded,
+                      semanticLabel: 'Search',
+                      onPressed: () {},
+                    ),
+                    WalletHeaderActionButton(
+                      icon: Icons.notifications_none_rounded,
+                      semanticLabel: 'Notifications',
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
 
                 // Scrollable area
@@ -302,29 +299,6 @@ class WalletAssetsScreen extends ConsumerWidget {
       case CreditCardTier.black:
         return const Color(0xff1e293b);
     }
-  }
-}
-
-class _HeaderBtn extends StatelessWidget {
-  const _HeaderBtn({required this.icon});
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.glassBackground(context),
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.glassBorder(context)),
-      ),
-      child: Icon(
-        icon,
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-        size: 22,
-      ),
-    );
   }
 }
 

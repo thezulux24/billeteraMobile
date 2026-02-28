@@ -76,7 +76,7 @@ class _AddTransactionBottomSheetState
                     : const LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Color(0xE6F5F3FF), Color(0xF0ECEEFF)],
+                        colors: [Color(0xE6EDE9FE), Color(0xF0EEF2FF)],
                       ),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(36),
@@ -164,7 +164,7 @@ class _AddTransactionBottomSheetState
                               fontSize: 48,
                               fontWeight: FontWeight.bold,
                               color: _transactionType == 'Income'
-                                  ? const Color(0xff4ade80)
+                                  ? AppColors.stitchPurple
                                   : onSurface,
                             ),
                             decoration: const InputDecoration(

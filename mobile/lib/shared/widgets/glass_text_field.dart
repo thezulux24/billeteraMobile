@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_colors.dart';
 
@@ -11,6 +12,8 @@ class GlassTextField extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.prefixIcon,
+    this.hintText,
+    this.inputFormatters,
     this.textInputAction,
     this.onFieldSubmitted,
     this.isPremium = false,
@@ -22,6 +25,8 @@ class GlassTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final IconData? prefixIcon;
+  final String? hintText;
+  final List<TextInputFormatter>? inputFormatters;
   final TextInputAction? textInputAction;
   final void Function(String)? onFieldSubmitted;
   final bool isPremium;
@@ -36,12 +41,14 @@ class GlassTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       validator: validator,
       textInputAction: textInputAction,
       onFieldSubmitted: onFieldSubmitted,
       style: TextStyle(color: onSurface),
       decoration: InputDecoration(
         labelText: label,
+        hintText: hintText,
         labelStyle: TextStyle(color: onSurface.withValues(alpha: 0.6)),
         prefixIcon: prefixIcon == null
             ? null

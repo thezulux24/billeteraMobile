@@ -5,6 +5,7 @@ import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/glass_donut_chart.dart';
 import '../../../../shared/widgets/category_list_item.dart';
 import '../../../../shared/widgets/premium_bottom_nav.dart';
+import '../../../../shared/widgets/wallet_style_header.dart';
 import '../../../../core/theme/app_colors.dart';
 
 class AnalyticsScreen extends StatelessWidget {
@@ -24,34 +25,41 @@ class AnalyticsScreen extends StatelessWidget {
           Column(
             children: [
               // Header
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 60,
-                  left: 24,
-                  right: 24,
-                  bottom: 24,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              WalletStyleHeader(
+                leading: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _IconBtn(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () => context.go('/home'),
-                    ),
                     Text(
                       'Analytics',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.manrope(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: onSurface,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    _IconBtn(
-                      icon: Icons.calendar_month_rounded,
-                      onPressed: () {},
+                    const Text(
+                      'Track your spending performance',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: Color(0xff94a3b8)),
                     ),
                   ],
                 ),
+                actions: [
+                  WalletHeaderActionButton(
+                    icon: Icons.calendar_month_rounded,
+                    semanticLabel: 'Calendar',
+                    onPressed: () {},
+                  ),
+                  WalletHeaderActionButton(
+                    icon: Icons.notifications_none_rounded,
+                    semanticLabel: 'Notifications',
+                    onPressed: () {},
+                  ),
+                ],
               ),
 
               // Scrollable area
@@ -279,34 +287,6 @@ class AnalyticsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onPressed});
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.glassBackground(context),
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.glassBorder(context)),
-        ),
-        child: Icon(
-          icon,
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-          size: 20,
-        ),
       ),
     );
   }

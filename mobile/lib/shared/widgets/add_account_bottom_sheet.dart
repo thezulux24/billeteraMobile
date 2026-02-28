@@ -7,6 +7,7 @@ import '../../features/bank_accounts/providers/bank_account_notifier.dart';
 import '../../features/cash_wallets/providers/cash_wallet_notifier.dart';
 import '../../features/credit_cards/providers/credit_card_notifier.dart';
 import '../../core/theme/app_colors.dart';
+import 'glass_text_field.dart';
 // ─── Account Type ────────────────────────────────────────────────────────────
 
 enum _AccountType { bank, cash, credit }
@@ -109,7 +110,7 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
                     : const LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Color(0xE6F5F3FF), Color(0xF0ECEEFF)],
+                        colors: [Color(0xE6EDE9FE), Color(0xF0EEF2FF)],
                       ),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(36),
@@ -193,12 +194,12 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _GlassField(
+        GlassTextField(
           controller: _nameController,
           label: 'Account Name',
-          hint: 'e.g. Main Savings',
-          icon: Icons.label_outline_rounded,
-          isDark: isDark,
+          hintText: 'e.g. Main Savings',
+          prefixIcon: Icons.label_outline_rounded,
+          isPremium: true,
           validator: (v) =>
               (v == null || v.isEmpty) ? 'Enter an account name' : null,
         ),
@@ -206,25 +207,25 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
 
         // Balance (not for Credit)
         if (_accountType != _AccountType.credit) ...[
-          _GlassField(
+          GlassTextField(
             controller: _balanceController,
             label: 'Current Balance',
-            hint: '0.00',
-            icon: Icons.attach_money_rounded,
+            hintText: '0.00',
+            prefixIcon: Icons.attach_money_rounded,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            isDark: isDark,
+            isPremium: true,
           ),
           const SizedBox(height: 16),
         ],
 
         // Bank name (not for Cash)
         if (_accountType != _AccountType.cash) ...[
-          _GlassField(
+          GlassTextField(
             controller: _bankNameController,
             label: 'Bank Name',
-            hint: 'e.g. Chase, BBVA',
-            icon: Icons.account_balance_rounded,
-            isDark: isDark,
+            hintText: 'e.g. Chase, BBVA',
+            prefixIcon: Icons.account_balance_rounded,
+            isPremium: true,
           ),
           const SizedBox(height: 16),
         ],
@@ -234,13 +235,13 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
           Row(
             children: [
               Expanded(
-                child: _GlassField(
+                child: GlassTextField(
                   controller: _lastFourController,
                   label: 'Last 4 Digits',
-                  hint: '0000',
-                  icon: Icons.pin_rounded,
+                  hintText: '0000',
+                  prefixIcon: Icons.pin_rounded,
                   keyboardType: TextInputType.number,
-                  isDark: isDark,
+                  isPremium: true,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(4),
@@ -281,13 +282,13 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
           ),
           const SizedBox(height: 16),
 
-          _GlassField(
+          GlassTextField(
             controller: _limitController,
             label: 'Credit Limit',
-            hint: '5000.00',
-            icon: Icons.speed_rounded,
+            hintText: '5000.00',
+            prefixIcon: Icons.speed_rounded,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            isDark: isDark,
+            isPremium: true,
           ),
         ],
       ],
@@ -462,7 +463,7 @@ class _AnimatedTypeSelector extends StatelessWidget {
                 top: 0,
                 bottom: 0,
                 width: itemW,
-                child: _SlidingPill(isDark: isDark),
+                child: const _SlidingPill(),
               ),
 
               // ── Labels row ─────────────────────────────────────────
@@ -505,8 +506,7 @@ class _AnimatedTypeSelector extends StatelessWidget {
 
 /// La "pill" de vidrio que se desliza debajo del texto seleccionado.
 class _SlidingPill extends StatelessWidget {
-  const _SlidingPill({required this.isDark});
-  final bool isDark;
+  const _SlidingPill();
 
   @override
   Widget build(BuildContext context) {
@@ -516,11 +516,7 @@ class _SlidingPill extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.stitchPurple, AppColors.stitchIndigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: AppColors.stitchIndigo,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.25),
@@ -533,11 +529,6 @@ class _SlidingPill extends StatelessWidget {
                 spreadRadius: -2,
                 offset: const Offset(0, 3),
               ),
-              BoxShadow(
-                color: AppColors.stitchPurple.withValues(alpha: 0.2),
-                blurRadius: 20,
-                spreadRadius: 0,
-              ),
             ],
           ),
         ),
@@ -547,136 +538,6 @@ class _SlidingPill extends StatelessWidget {
 }
 
 // ─── Glass Text Field ─────────────────────────────────────────────────────────
-
-class _GlassField extends StatefulWidget {
-  const _GlassField({
-    required this.controller,
-    required this.label,
-    required this.isDark,
-    this.hint,
-    this.icon,
-    this.keyboardType,
-    this.inputFormatters,
-    this.validator,
-  });
-
-  final TextEditingController controller;
-  final String label;
-  final String? hint;
-  final IconData? icon;
-  final bool isDark;
-  final TextInputType? keyboardType;
-  final List<TextInputFormatter>? inputFormatters;
-  final FormFieldValidator<String>? validator;
-
-  @override
-  State<_GlassField> createState() => _GlassFieldState();
-}
-
-class _GlassFieldState extends State<_GlassField> {
-  bool _focused = false;
-  late final FocusNode _focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    if (mounted) setState(() => _focused = _focusNode.hasFocus);
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final borderColor = _focused
-        ? AppColors.stitchPurple.withValues(alpha: 0.8)
-        : widget.isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.1);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: BoxDecoration(
-        color: widget.isDark
-            ? Colors.white.withValues(alpha: _focused ? 0.08 : 0.05)
-            : Colors.white.withValues(alpha: _focused ? 0.75 : 0.55),
-        borderRadius: BorderRadius.circular(16),
-        border: _focused
-            ? Border.all(color: borderColor, width: 1.5)
-            : Border.all(color: Colors.transparent),
-        boxShadow: _focused
-            ? [
-                BoxShadow(
-                  color: AppColors.stitchIndigo.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
-      ),
-      child: TextFormField(
-        controller: widget.controller,
-        focusNode: _focusNode,
-        keyboardType: widget.keyboardType,
-        inputFormatters: widget.inputFormatters,
-        validator: widget.validator,
-        style: GoogleFonts.manrope(
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
-          color: widget.isDark ? Colors.white : const Color(0xFF0F0E1C),
-        ),
-        onTapOutside: (_) => _focusNode.unfocus(),
-        decoration: InputDecoration(
-          labelText: widget.label,
-          hintText: widget.hint,
-          prefixIcon: widget.icon != null
-              ? Icon(
-                  widget.icon,
-                  size: 20,
-                  color: _focused
-                      ? AppColors.stitchPurple
-                      : widget.isDark
-                      ? Colors.white.withValues(alpha: 0.35)
-                      : Colors.black.withValues(alpha: 0.3),
-                )
-              : null,
-          labelStyle: GoogleFonts.manrope(
-            fontSize: 13,
-            color: _focused
-                ? AppColors.stitchPurple
-                : widget.isDark
-                ? Colors.white.withValues(alpha: 0.4)
-                : Colors.black.withValues(alpha: 0.4),
-          ),
-          hintStyle: GoogleFonts.manrope(
-            fontSize: 14,
-            color: widget.isDark
-                ? Colors.white.withValues(alpha: 0.2)
-                : Colors.black.withValues(alpha: 0.2),
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 18,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Glass Dropdown ───────────────────────────────────────────────────────────
 
 class _GlassDropdown extends StatelessWidget {
   const _GlassDropdown({

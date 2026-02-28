@@ -16,8 +16,8 @@ class AppColors {
   static const Color orbGold = Color(0xFFF2B24A);
   static const Color orbPink = Color(0xFFFF8BA7);
 
-  static const Color stitchIndigo = Color(0xFF0F766E); // Premium Teal/Emerald
-  static const Color stitchPurple = Color(0xFF14B8A6); // Lighter vibrant accent
+  static const Color stitchIndigo = Color(0xFF4F46E5); // Premium Indigo
+  static const Color stitchPurple = Color(0xFF818CF8); // Premium Purple Accent
   static const Color stitchDarkBackground = Color(0xFF0F0E1C);
 
   static const Color glassLight = Color(0x7AFFFFFF);

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../shared/widgets/glass_scaffold.dart';
 import '../../../../shared/widgets/premium_bottom_nav.dart';
+import '../../../../shared/widgets/wallet_style_header.dart';
 import '../../../auth/providers/auth_notifier.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -35,31 +36,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Column(
             children: [
               // Header
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 60,
-                  left: 24,
-                  right: 24,
-                  bottom: 16,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              WalletStyleHeader(
+                leading: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _IconBtn(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onPressed: () => context.go('/home'),
-                    ),
                     Text(
-                      'Profile',
+                      'Settings',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.manrope(
-                        fontSize: 18,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: onSurface,
+                        letterSpacing: -0.5,
                       ),
                     ),
-                    _IconBtn(icon: Icons.edit_outlined, onPressed: () {}),
+                    const Text(
+                      'Manage your profile and preferences',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: Color(0xff94a3b8)),
+                    ),
                   ],
                 ),
+                actions: [
+                  WalletHeaderActionButton(
+                    icon: Icons.edit_outlined,
+                    semanticLabel: 'Edit profile',
+                    onPressed: () {},
+                  ),
+                  WalletHeaderActionButton(
+                    icon: Icons.notifications_none_rounded,
+                    semanticLabel: 'Notifications',
+                    onPressed: () {},
+                  ),
+                ],
               ),
 
               // Scrollable area
@@ -247,33 +258,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _IconBtn extends StatelessWidget {
-  const _IconBtn({required this.icon, required this.onPressed});
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.glassBackground(context),
-          shape: BoxShape.circle,
-          border: Border.all(color: AppColors.glassBorder(context)),
-        ),
-        child: Icon(
-          icon,
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-          size: 20,
-        ),
       ),
     );
   }
