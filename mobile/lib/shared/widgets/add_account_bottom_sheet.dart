@@ -49,6 +49,7 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
   final _balanceController = TextEditingController();
   final _lastFourController = TextEditingController();
   final _limitController = TextEditingController();
+  bool _creating = false;
 
   late final AnimationController _fadeCtrl;
   late final Animation<double> _fadeAnim;
@@ -296,41 +297,57 @@ class _AddAccountBottomSheetState extends ConsumerState<AddAccountBottomSheet>
   }
 
   Future<void> _createAccount() async {
+    if (_creating) return;
     if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _creating = true);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
 
     final name = _nameController.text.trim();
     final balance = double.tryParse(_balanceController.text) ?? 0.0;
     final bankName = _bankNameController.text.trim();
     bool success = false;
 
-    if (_accountType == _AccountType.bank) {
-      success = await ref
-          .read(bankAccountNotifierProvider)
-          .createAccount(
-            name: name,
-            balance: balance,
-            bankName: bankName,
-            currency: 'USD',
-          );
-    } else if (_accountType == _AccountType.cash) {
-      success = await ref
-          .read(cashWalletNotifierProvider)
-          .createWallet(name: name, balance: balance, currency: 'USD');
-    } else {
-      final limit = double.tryParse(_limitController.text) ?? 0.0;
-      final lastFour = _lastFourController.text.trim();
-      success = await ref
-          .read(creditCardNotifierProvider)
-          .createCard(
-            name: name,
-            issuer: bankName.isNotEmpty ? bankName : null,
-            lastFour: lastFour.length == 4 ? lastFour : null,
-            cardProvider: _cardProvider.toLowerCase(),
-            tier: _creditTier.toLowerCase(),
-            creditLimit: limit,
-            currentDebt: 0.0,
-            currency: 'USD',
-          );
+    try {
+      if (_accountType == _AccountType.bank) {
+        success = await ref
+            .read(bankAccountNotifierProvider)
+            .createAccount(
+              name: name,
+              balance: balance,
+              bankName: bankName,
+              currency: 'USD',
+            );
+      } else if (_accountType == _AccountType.cash) {
+        success = await ref
+            .read(cashWalletNotifierProvider)
+            .createWallet(name: name, balance: balance, currency: 'USD');
+      } else {
+        final limit = double.tryParse(_limitController.text) ?? 0.0;
+        final lastFour = _lastFourController.text.trim();
+        success = await ref
+            .read(creditCardNotifierProvider)
+            .createCard(
+              name: name,
+              issuer: bankName.isNotEmpty ? bankName : null,
+              lastFour: lastFour.length == 4 ? lastFour : null,
+              cardProvider: _cardProvider.toLowerCase(),
+              tier: _creditTier.toLowerCase(),
+              creditLimit: limit,
+              currentDebt: 0.0,
+              currency: 'USD',
+            );
+      }
+    } finally {
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+        setState(() => _creating = false);
+      }
     }
 
     if (!mounted) return;

@@ -22,10 +22,8 @@ class GlassScaffold extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final backgroundColor = isPremium
-        ? (isDark
-              ? AppColors.stitchDarkBackground
-              : AppColors.lightBackgroundTop)
-        : (isDark ? Colors.black : Colors.white);
+        ? (isDark ? const Color(0xFF0C1026) : const Color(0xFFF4F6FF))
+        : (isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC));
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -36,7 +34,27 @@ class GlassScaffold extends StatelessWidget {
         decoration: BoxDecoration(
           color: backgroundColor,
           gradient: isPremium
-              ? null
+              ? (isDark
+                    ? const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF0B0F23),
+                          Color(0xFF141B3A),
+                          Color(0xFF1D2450),
+                        ],
+                        stops: [0.0, 0.45, 1.0],
+                      )
+                    : const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF8FAFF),
+                          Color(0xFFEEF2FF),
+                          Color(0xFFE9EEFF),
+                        ],
+                        stops: [0.0, 0.5, 1.0],
+                      ))
               : LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -64,32 +82,32 @@ class GlassScaffold extends StatelessWidget {
   List<Widget> _buildOrbs(bool isDark) {
     if (isPremium) {
       return [
-        // Top Left Indigo mesh
+        // Large indigo accent
         _decorativeOrb(
-          top: -100,
-          left: -100,
-          size: 500,
-          color: const Color(0xff4F46E5),
-          alpha: 0.15,
-          blurRadius: 150,
+          top: -150,
+          left: -140,
+          size: 560,
+          color: const Color(0xFF4F46E5),
+          alpha: isDark ? 0.16 : 0.12,
+          blurRadius: 170,
         ),
-        // Top Center Blue mesh
+        // Soft purple center glow
         _decorativeOrb(
-          top: -50,
-          left: 100,
-          size: 400,
-          color: const Color(0xff2513ec),
-          alpha: 0.1,
-          blurRadius: 120,
-        ),
-        // Bottom Right Pink/Purple mesh
-        _decorativeOrb(
-          bottom: -100,
+          top: 30,
           right: -100,
-          size: 450,
-          color: const Color(0xffec4899),
-          alpha: 0.12,
-          blurRadius: 140,
+          size: 420,
+          color: const Color(0xFF7C3AED),
+          alpha: isDark ? 0.12 : 0.08,
+          blurRadius: 130,
+        ),
+        // Bottom blue highlight
+        _decorativeOrb(
+          bottom: -150,
+          right: -120,
+          size: 500,
+          color: const Color(0xFF2563EB),
+          alpha: isDark ? 0.12 : 0.09,
+          blurRadius: 160,
         ),
       ];
     }

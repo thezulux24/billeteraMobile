@@ -20,8 +20,9 @@ class CategoryService:
             raise
 
     async def create_category(self, *, access_token: str, user_id: str, request: CategoryCreateRequest) -> CategoryResponse:
-        payload = request.model_dump()
+        payload = request.model_dump(exclude={"is_system"})
         payload["user_id"] = user_id
+        payload["is_system"] = False
         try:
             row = await self._rest_client.create_category(access_token=access_token, payload=payload)
             return CategoryResponse.model_validate(row)
@@ -42,7 +43,7 @@ class CategoryService:
         details = exc.details if isinstance(exc.details, dict) else {}
         code = str(details.get("code", "")).upper()
         message = str(details.get("message", "")).lower()
-        if code == "42P01" or ("relation" in message and "categories" in message):
+        if code == "42P01" and "categories" in message:
             raise AppException(
                 status_code=533,
                 code="MIGRATIONS_NOT_APPLIED",

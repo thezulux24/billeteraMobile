@@ -25,10 +25,22 @@ class AddTransactionBottomSheet extends ConsumerStatefulWidget {
 
 class _AddTransactionBottomSheetState
     extends ConsumerState<AddTransactionBottomSheet> {
+  static const String _typeIncome = 'Income';
+  static const String _typeExpense = 'Expense';
+  static const String _typeTransfer = 'Transfer';
+  static const String _typeCardPay = 'Card Pay';
+
   final _formKey = GlobalKey<FormState>();
-  String _transactionType = 'Expense'; // Income, Expense, Transfer
+  static final RegExp _uuidPattern = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+  );
+
+  String _transactionType = _typeExpense;
   Category? _selectedCategory;
   dynamic _selectedAsset; // BankAccount, CashWallet, or CreditCard
+  dynamic _selectedTargetAsset; // Transfer destination (BankAccount/CashWallet)
+  dynamic _selectedCreditCardForPayment; // CreditCard for card payments
+  bool _saving = false;
 
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -37,6 +49,16 @@ class _AddTransactionBottomSheetState
   void initState() {
     super.initState();
     _selectedCategory = PredefinedCategories.expense.first;
+    Future.microtask(() async {
+      await ref.read(categoryNotifierProvider).load();
+      if (!mounted) return;
+      setState(() {
+        _selectedCategory = _defaultCategoryForType(
+          _transactionType,
+          ref.read(categoryNotifierProvider).categories,
+        );
+      });
+    });
   }
 
   @override
@@ -127,20 +149,30 @@ class _AddTransactionBottomSheetState
 
                           // Type Selector
                           _buildSegmentedSelector(
-                            options: ['Income', 'Expense', 'Transfer'],
+                            options: const [
+                              _typeIncome,
+                              _typeExpense,
+                              _typeTransfer,
+                              _typeCardPay,
+                            ],
                             selected: _transactionType,
                             onChanged: (val) {
                               setState(() {
                                 _transactionType = val;
-                                if (val == 'Income')
-                                  _selectedCategory =
-                                      PredefinedCategories.income.first;
-                                if (val == 'Expense')
-                                  _selectedCategory =
-                                      PredefinedCategories.expense.first;
-                                if (val == 'Transfer')
-                                  _selectedCategory =
-                                      PredefinedCategories.transfer.first;
+                                _selectedCategory = _defaultCategoryForType(
+                                  val,
+                                  ref.read(categoryNotifierProvider).categories,
+                                );
+                                _selectedAsset =
+                                    _isAssetAllowedForSource(_selectedAsset)
+                                    ? _selectedAsset
+                                    : null;
+                                if (val != _typeTransfer) {
+                                  _selectedTargetAsset = null;
+                                }
+                                if (val != _typeCardPay) {
+                                  _selectedCreditCardForPayment = null;
+                                }
                               });
                             },
                           ),
@@ -163,7 +195,7 @@ class _AddTransactionBottomSheetState
                             style: GoogleFonts.manrope(
                               fontSize: 48,
                               fontWeight: FontWeight.bold,
-                              color: _transactionType == 'Income'
+                              color: _transactionType == _typeIncome
                                   ? AppColors.stitchPurple
                                   : onSurface,
                             ),
@@ -203,7 +235,9 @@ class _AddTransactionBottomSheetState
 
                           // Asset Selector
                           Text(
-                            'Account / Wallet',
+                            _transactionType == _typeCardPay
+                                ? 'Pay From'
+                                : 'Account / Wallet',
                             style: GoogleFonts.manrope(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -212,6 +246,31 @@ class _AddTransactionBottomSheetState
                           ),
                           const SizedBox(height: 12),
                           _buildAssetSelector(),
+                          if (_transactionType == _typeTransfer) ...[
+                            const SizedBox(height: 24),
+                            Text(
+                              'Destination Account / Wallet',
+                              style: GoogleFonts.manrope(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildAssetSelector(isTarget: true),
+                          ] else if (_transactionType == _typeCardPay) ...[
+                            const SizedBox(height: 24),
+                            Text(
+                              'Credit Card',
+                              style: GoogleFonts.manrope(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildAssetSelector(creditCardOnly: true),
+                          ],
                           const SizedBox(height: 16),
                         ],
                       ),
@@ -223,6 +282,7 @@ class _AddTransactionBottomSheetState
                         child: GlassButton(
                           label: 'Save Transaction',
                           isPremium: true,
+                          loading: _saving,
                           onPressed: _saveTransaction,
                         ),
                       ),
@@ -338,25 +398,14 @@ class _AddTransactionBottomSheetState
 
   Widget _buildCategoryGrid() {
     final userCategories = ref.watch(categoryNotifierProvider).categories;
-    List<Category> systemCategories = [];
-
-    final currentKind = _transactionType == 'Income'
-        ? CategoryKind.income
-        : _transactionType == 'Transfer'
-        ? CategoryKind.transfer
-        : CategoryKind.expense;
-
-    if (_transactionType == 'Income')
-      systemCategories = PredefinedCategories.income;
-    if (_transactionType == 'Expense')
-      systemCategories = PredefinedCategories.expense;
-    if (_transactionType == 'Transfer')
-      systemCategories = PredefinedCategories.transfer;
+    final currentKind = _currentCategoryKind(_transactionType);
 
     final filteredUserCategories = userCategories
         .where((c) => c.kind == currentKind)
         .toList();
-    final allCategories = [...systemCategories, ...filteredUserCategories];
+    final allCategories = filteredUserCategories.isNotEmpty
+        ? filteredUserCategories
+        : _fallbackCategoriesForKind(currentKind);
 
     final onSurface = Theme.of(context).colorScheme.onSurface;
 
@@ -365,7 +414,7 @@ class _AddTransactionBottomSheetState
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: allCategories.length + 1, // +1 for Add button
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        separatorBuilder: (_, index) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           if (index == allCategories.length) {
             return _buildAddCategoryButton();
@@ -386,10 +435,14 @@ class _AddTransactionBottomSheetState
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: isSelected ? catColor : catColor.withOpacity(0.1),
+                    color: isSelected
+                        ? catColor
+                        : catColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected ? catColor : catColor.withOpacity(0.3),
+                      color: isSelected
+                          ? catColor
+                          : catColor.withValues(alpha: 0.3),
                       width: 2,
                     ),
                   ),
@@ -404,7 +457,9 @@ class _AddTransactionBottomSheetState
                   cat.name,
                   style: GoogleFonts.manrope(
                     fontSize: 11,
-                    color: isSelected ? catColor : onSurface.withOpacity(0.6),
+                    color: isSelected
+                        ? catColor
+                        : onSurface.withValues(alpha: 0.6),
                     fontWeight: isSelected
                         ? FontWeight.bold
                         : FontWeight.normal,
@@ -428,17 +483,17 @@ class _AddTransactionBottomSheetState
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: onSurface.withOpacity(0.05),
+              color: onSurface.withValues(alpha: 0.05),
               shape: BoxShape.circle,
               border: Border.all(
-                color: onSurface.withOpacity(0.1),
+                color: onSurface.withValues(alpha: 0.1),
                 width: 2,
                 style: BorderStyle.solid,
               ),
             ),
             child: Icon(
               Icons.add_rounded,
-              color: onSurface.withOpacity(0.6),
+              color: onSurface.withValues(alpha: 0.6),
               size: 24,
             ),
           ),
@@ -447,7 +502,7 @@ class _AddTransactionBottomSheetState
             'New',
             style: GoogleFonts.manrope(
               fontSize: 11,
-              color: onSurface.withOpacity(0.6),
+              color: onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -455,31 +510,51 @@ class _AddTransactionBottomSheetState
     );
   }
 
-  void _showAddCategorySheet() {
-    final currentKind = _transactionType == 'Income'
-        ? CategoryKind.income
-        : _transactionType == 'Transfer'
-        ? CategoryKind.transfer
-        : CategoryKind.expense;
+  Future<void> _showAddCategorySheet() async {
+    final currentKind = _currentCategoryKind(_transactionType);
 
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => AddCategoryBottomSheet(kind: currentKind),
     );
+    if (!mounted) return;
+    setState(() {
+      _selectedCategory = _defaultCategoryForType(
+        _transactionType,
+        ref.read(categoryNotifierProvider).categories,
+      );
+    });
   }
 
-  Widget _buildAssetSelector() {
+  Widget _buildAssetSelector({
+    bool isTarget = false,
+    bool creditCardOnly = false,
+  }) {
     final bankAccounts = ref.watch(bankAccountNotifierProvider).accounts;
     final cashWallets = ref.watch(cashWalletNotifierProvider).wallets;
     final creditCards = ref.watch(creditCardNotifierProvider).cards;
 
-    final allAssets = [...bankAccounts, ...cashWallets, ...creditCards];
+    final allAssets = creditCardOnly
+        ? [...creditCards]
+        : isTarget
+        ? [...bankAccounts, ...cashWallets]
+              .where((asset) => (asset as dynamic).id != _selectedAsset?.id)
+              .toList()
+        : _sourceAssets(
+            bankAccounts: bankAccounts,
+            cashWallets: cashWallets,
+            creditCards: creditCards,
+          );
 
     if (allAssets.isEmpty) {
       return Text(
-        'No accounts found. Create one first.',
+        creditCardOnly
+            ? 'No credit cards found. Create one first.'
+            : isTarget
+            ? 'Choose a different destination account.'
+            : 'No compatible accounts found. Create one first.',
         style: TextStyle(color: Theme.of(context).colorScheme.error),
       );
     }
@@ -489,26 +564,34 @@ class _AddTransactionBottomSheetState
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: allAssets.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, index) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final asset = allAssets[index] as dynamic;
-          final isSelected = _selectedAsset?.id == asset.id;
-          String name = '';
-          IconData icon = Icons.account_balance_wallet_rounded;
-
-          if (asset.runtimeType.toString().contains('BankAccount')) {
-            name = asset.name;
-            icon = Icons.account_balance_rounded;
-          } else if (asset.runtimeType.toString().contains('CashWallet')) {
-            name = asset.name;
-            icon = Icons.payments_rounded;
-          } else if (asset.runtimeType.toString().contains('CreditCard')) {
-            name = asset.name;
-            icon = Icons.credit_card_rounded;
-          }
+          final selectedAsset = creditCardOnly
+              ? _selectedCreditCardForPayment
+              : isTarget
+              ? _selectedTargetAsset
+              : _selectedAsset;
+          final isSelected = selectedAsset?.id == asset.id;
+          final name = asset.name as String;
+          final icon = _assetIcon(asset);
 
           return GestureDetector(
-            onTap: () => setState(() => _selectedAsset = asset),
+            onTap: () => setState(() {
+              if (creditCardOnly) {
+                _selectedCreditCardForPayment = asset;
+                return;
+              }
+              if (isTarget) {
+                _selectedTargetAsset = asset;
+                return;
+              }
+              _selectedAsset = asset;
+              if (_transactionType == _typeTransfer &&
+                  _selectedTargetAsset?.id == asset.id) {
+                _selectedTargetAsset = null;
+              }
+            }),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -554,11 +637,105 @@ class _AddTransactionBottomSheetState
     );
   }
 
+  List<dynamic> _sourceAssets({
+    required List<dynamic> bankAccounts,
+    required List<dynamic> cashWallets,
+    required List<dynamic> creditCards,
+  }) {
+    if (_transactionType == _typeExpense) {
+      return [...bankAccounts, ...cashWallets, ...creditCards];
+    }
+    return [...bankAccounts, ...cashWallets];
+  }
+
+  bool _isAssetAllowedForSource(dynamic asset) {
+    if (asset == null) return false;
+    if (_transactionType == _typeExpense) return true;
+    return !_isCreditCard(asset);
+  }
+
+  bool _isBankAccount(dynamic asset) =>
+      asset.runtimeType.toString().contains('BankAccount');
+  bool _isCashWallet(dynamic asset) =>
+      asset.runtimeType.toString().contains('CashWallet');
+  bool _isCreditCard(dynamic asset) =>
+      asset.runtimeType.toString().contains('CreditCard');
+
+  IconData _assetIcon(dynamic asset) {
+    if (_isBankAccount(asset)) {
+      return Icons.account_balance_rounded;
+    }
+    if (_isCashWallet(asset)) {
+      return Icons.payments_rounded;
+    }
+    if (_isCreditCard(asset)) {
+      return Icons.credit_card_rounded;
+    }
+    return Icons.account_balance_wallet_rounded;
+  }
+
+  bool _isUuid(String? value) {
+    if (value == null) return false;
+    return _uuidPattern.hasMatch(value);
+  }
+
+  CategoryKind _currentCategoryKind(String transactionType) {
+    if (transactionType == _typeIncome) return CategoryKind.income;
+    if (transactionType == _typeTransfer) return CategoryKind.transfer;
+    if (transactionType == _typeCardPay) return CategoryKind.creditPayment;
+    return CategoryKind.expense;
+  }
+
+  List<Category> _fallbackCategoriesForKind(CategoryKind kind) {
+    if (kind == CategoryKind.income) return PredefinedCategories.income;
+    if (kind == CategoryKind.transfer) return PredefinedCategories.transfer;
+    if (kind == CategoryKind.creditPayment) {
+      return PredefinedCategories.creditPayment;
+    }
+    return PredefinedCategories.expense;
+  }
+
+  Category _defaultCategoryForType(
+    String transactionType,
+    List<Category> categories,
+  ) {
+    final kind = _currentCategoryKind(transactionType);
+    final matches = categories.where((c) => c.kind == kind).toList();
+    if (matches.isNotEmpty) {
+      matches.sort((a, b) {
+        if (a.isSystem == b.isSystem) return a.name.compareTo(b.name);
+        return a.isSystem ? -1 : 1;
+      });
+      return matches.first;
+    }
+    return _fallbackCategoriesForKind(kind).first;
+  }
+
+  void _mapAssetToPayload(
+    dynamic asset, {
+    required void Function(String value) setBankAccountId,
+    required void Function(String value) setCashWalletId,
+    required void Function(String value) setCreditCardId,
+  }) {
+    if (_isBankAccount(asset)) {
+      setBankAccountId(asset.id as String);
+      return;
+    }
+    if (_isCashWallet(asset)) {
+      setCashWalletId(asset.id as String);
+      return;
+    }
+    if (_isCreditCard(asset)) {
+      setCreditCardId(asset.id as String);
+    }
+  }
+
   Future<void> _saveTransaction() async {
+    if (_saving) return;
     if (!_formKey.currentState!.validate()) return;
     if (_selectedAsset == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an account.')),
+        const SnackBar(content: Text('Please select a source account.')),
       );
       return;
     }
@@ -572,44 +749,129 @@ class _AddTransactionBottomSheetState
       return;
     }
 
-    final kind = _transactionType == 'Income'
-        ? TransactionKind.income
-        : (_transactionType == 'Expense'
-              ? TransactionKind.expense
-              : TransactionKind.transfer);
+    late final TransactionKind kind;
+    switch (_transactionType) {
+      case _typeIncome:
+        kind = TransactionKind.income;
+        break;
+      case _typeExpense:
+        kind = _isCreditCard(selectedAsset)
+            ? TransactionKind.creditCharge
+            : TransactionKind.expense;
+        break;
+      case _typeTransfer:
+        kind = TransactionKind.transfer;
+        break;
+      case _typeCardPay:
+        kind = TransactionKind.creditPayment;
+        break;
+      default:
+        kind = TransactionKind.expense;
+        break;
+    }
+
+    if (kind == TransactionKind.income && _isCreditCard(selectedAsset)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Income can only be assigned to bank or cash accounts.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (kind == TransactionKind.transfer && _selectedTargetAsset == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a destination account.')),
+      );
+      return;
+    }
+
+    if (kind == TransactionKind.creditPayment &&
+        _selectedCreditCardForPayment == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a credit card to pay.')),
+      );
+      return;
+    }
 
     String? bankAccountId;
     String? cashWalletId;
     String? creditCardId;
+    String? targetBankAccountId;
+    String? targetCashWalletId;
 
-    final String assetType = selectedAsset.runtimeType.toString();
-    if (assetType.contains('BankAccount')) {
-      bankAccountId = selectedAsset.id;
-    } else if (assetType.contains('CashWallet')) {
-      cashWalletId = selectedAsset.id;
-    } else if (assetType.contains('CreditCard')) {
-      creditCardId = selectedAsset.id;
+    _mapAssetToPayload(
+      selectedAsset,
+      setBankAccountId: (value) => bankAccountId = value,
+      setCashWalletId: (value) => cashWalletId = value,
+      setCreditCardId: (value) => creditCardId = value,
+    );
+
+    if (kind == TransactionKind.transfer && _selectedTargetAsset != null) {
+      _mapAssetToPayload(
+        _selectedTargetAsset,
+        setBankAccountId: (value) => targetBankAccountId = value,
+        setCashWalletId: (value) => targetCashWalletId = value,
+        setCreditCardId: (_) {},
+      );
     }
 
+    if (kind == TransactionKind.creditPayment) {
+      if (_isCreditCard(selectedAsset)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Card payment source must be cash or bank account.'),
+          ),
+        );
+        return;
+      }
+      creditCardId = _selectedCreditCardForPayment.id as String;
+    }
+
+    final resolvedCategoryId = _isUuid(_selectedCategory?.id)
+        ? _selectedCategory!.id
+        : _defaultCategoryForType(
+            _transactionType,
+            ref.read(categoryNotifierProvider).categories,
+          ).id;
+    final categoryId = _isUuid(resolvedCategoryId) ? resolvedCategoryId : null;
+
+    setState(() => _saving = true);
     final success = await ref
         .read(transactionNotifierProvider)
         .createTransaction(
           kind: kind,
           amount: amount,
           currency: 'USD',
-          description: _descriptionController.text,
-          categoryId: _selectedCategory?.id,
+          description: _descriptionController.text.trim(),
+          categoryId: categoryId,
           bankAccountId: bankAccountId,
           cashWalletId: cashWalletId,
           creditCardId: creditCardId,
+          targetBankAccountId: targetBankAccountId,
+          targetCashWalletId: targetCashWalletId,
         );
+    if (mounted) {
+      setState(() => _saving = false);
+    }
 
     if (success && mounted) {
+      await Future.wait([
+        ref.read(cashWalletNotifierProvider).load(),
+        ref.read(bankAccountNotifierProvider).load(),
+        ref.read(creditCardNotifierProvider).load(),
+      ]);
+      if (!mounted) return;
       Navigator.pop(context);
     } else if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to save transaction.')),
-      );
+      final message =
+          ref.read(transactionNotifierProvider).error ??
+          'Failed to save transaction.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -635,6 +897,8 @@ class _AddTransactionBottomSheetState
         return Icons.medical_services_rounded;
       case 'sync_alt':
         return Icons.sync_alt_rounded;
+      case 'credit_score':
+        return Icons.credit_score_rounded;
       default:
         return Icons.category_rounded;
     }

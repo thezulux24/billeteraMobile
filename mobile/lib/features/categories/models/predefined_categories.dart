@@ -80,5 +80,20 @@ class PredefinedCategories {
     ),
   ];
 
-  static List<Category> all = [...income, ...expense, ...transfer];
+  static const List<Category> creditPayment = [
+    Category(
+      id: 'cp_card_payment',
+      name: 'Credit Card Payment',
+      kind: CategoryKind.creditPayment,
+      color: '#818cf8',
+      icon: 'credit_score',
+    ),
+  ];
+
+  static List<Category> all = [
+    ...income,
+    ...expense,
+    ...transfer,
+    ...creditPayment,
+  ];
 }

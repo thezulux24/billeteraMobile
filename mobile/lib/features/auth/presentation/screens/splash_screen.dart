@@ -87,6 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
                 'https://www.transparenttextures.com/patterns/stardust.png',
                 repeat: ImageRepeat.repeat,
                 color: isDark ? null : Colors.black,
+                errorBuilder: (_, _, _) => const SizedBox.expand(),
               ),
             ),
           ),

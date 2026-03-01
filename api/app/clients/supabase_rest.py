@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -253,11 +255,11 @@ class SupabaseRestClient:
         access_token: str,
         user_id: str,
     ) -> list[dict[str, Any]]:
-        # Includes both system and user categories
+        # Categories are user-scoped. System defaults are seeded per user.
         url = (
             f"{self._base_url}/rest/v1/categories"
             f"?select=id,name,kind,color,icon,is_system,created_at,updated_at"
-            f"&or=(user_id.eq.{user_id},is_system.eq.true)&deleted_at=is.null"
+            f"&user_id=eq.{quote(user_id, safe='')}&deleted_at=is.null"
             "&order=name.asc"
         )
         async with httpx.AsyncClient(timeout=self._timeout) as client:
@@ -318,13 +320,48 @@ class SupabaseRestClient:
         user_id: str,
         limit: int = 50,
         offset: int = 0,
+        kind: str | None = None,
+        category_id: str | None = None,
+        cash_wallet_id: str | None = None,
+        bank_account_id: str | None = None,
+        credit_card_id: str | None = None,
+        occurred_from: datetime | None = None,
+        occurred_to: datetime | None = None,
     ) -> list[dict[str, Any]]:
-        url = (
-            f"{self._base_url}/rest/v1/transactions"
-            f"?select=id,kind,amount,currency,description,occurred_at,category_id,cash_wallet_id,bank_account_id,credit_card_id,target_cash_wallet_id,target_bank_account_id,created_at,updated_at"
-            f"&user_id=eq.{user_id}&deleted_at=is.null"
-            f"&order=occurred_at.desc&limit={limit}&offset={offset}"
+        select = (
+            "id,kind,amount,currency,description,occurred_at,category_id,"
+            "cash_wallet_id,bank_account_id,credit_card_id,target_cash_wallet_id,"
+            "target_bank_account_id,created_at,updated_at"
         )
+        query_parts = [
+            f"select={select}",
+            f"user_id=eq.{quote(user_id, safe='')}",
+            "deleted_at=is.null",
+            "order=occurred_at.desc",
+            f"limit={limit}",
+            f"offset={offset}",
+        ]
+
+        if kind is not None:
+            query_parts.append(f"kind=eq.{quote(kind, safe='')}")
+        if category_id is not None:
+            query_parts.append(f"category_id=eq.{quote(category_id, safe='')}")
+        if cash_wallet_id is not None:
+            query_parts.append(f"cash_wallet_id=eq.{quote(cash_wallet_id, safe='')}")
+        if bank_account_id is not None:
+            query_parts.append(f"bank_account_id=eq.{quote(bank_account_id, safe='')}")
+        if credit_card_id is not None:
+            query_parts.append(f"credit_card_id=eq.{quote(credit_card_id, safe='')}")
+        if occurred_from is not None:
+            query_parts.append(
+                f"occurred_at=gte.{quote(occurred_from.isoformat(), safe='')}",
+            )
+        if occurred_to is not None:
+            query_parts.append(
+                f"occurred_at=lte.{quote(occurred_to.isoformat(), safe='')}",
+            )
+
+        url = f"{self._base_url}/rest/v1/transactions?{'&'.join(query_parts)}"
         async with httpx.AsyncClient(timeout=self._timeout) as client:
             response = await client.get(url, headers=self._headers(access_token=access_token))
         return self._unwrap_response(response)
@@ -347,6 +384,32 @@ class SupabaseRestClient:
                 status_code=500,
                 code="TRANSACTION_CREATE_FAILED",
                 message="Transaction could not be created.",
+            )
+        return data[0]
+
+    async def update_transaction(
+        self,
+        *,
+        access_token: str,
+        user_id: str,
+        transaction_id: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        url = (
+            f"{self._base_url}/rest/v1/transactions"
+            f"?id=eq.{transaction_id}&user_id=eq.{user_id}&deleted_at=is.null"
+        )
+        headers = self._headers(access_token=access_token)
+        headers["Prefer"] = "return=representation"
+
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
+            response = await client.patch(url, json=payload, headers=headers)
+        data = self._unwrap_response(response)
+        if not data:
+            raise AppException(
+                status_code=404,
+                code="TRANSACTION_NOT_FOUND",
+                message="Transaction not found.",
             )
         return data[0]
 
